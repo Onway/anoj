@@ -1,4 +1,0 @@
-wyuoj
-=====
-
-online judge backend

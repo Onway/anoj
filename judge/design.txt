@@ -1,0 +1,53 @@
+judge [-t 1000] [-m 65536] [-f 4096] [-l java] [-d /tmp/data/1000] [-w /tmp] <command>
+
+[PARSER]
+C=0
+C++=0
+PASCAL=0
+JAVA=
+PYTHON=
+PHP=
+
+[OPTION]
+TIME=1000
+MEMORY=65536
+FSIZE=4096
+LANG=C
+DATA_DIRECTORY=/home/onway/wyuoj/data/1000
+WORK_DIRECTORY=/tmp
+
+[RESOURCE]
+RLIMIT_AS=
+RLIMIT_CORE=
+RLIMIT_CPU=
+
+[SIGNAL]
+SIGHUP=
+SIGINT=
+SIGQUIT=
+SIGPIPE=
+
+[SYSCALL]
+accept=
+bind=
+capset=
+chdir=
+
+
+1, parse config file
+2, parse commandline
+3, parse datadir
+4, judge case
+5, pre_execute_child
+
+struct resource_element
+{
+    int resource;
+    struct rlimit rlim;
+}
+
+struct signal_element
+{
+    int signum;
+    int action;
+}
