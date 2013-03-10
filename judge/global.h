@@ -1,6 +1,7 @@
 /*
  * -*- coding: utf-8 -*-
- * Author        : liuyi <aluohuai@126.com>
+ * Filename      : global.h
+ * Author        : Liu Yi <aluohuai@126.com>
  * Create Date   : 2013-03-10
  */
 

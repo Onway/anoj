@@ -1,15 +1,15 @@
 /*
  * -*- coding: utf-8 -*-
- * Filename      : exit.h
+ * Filename      : keyfile.h
  * Author        : Liu Yi <aluohuai@126.com>
  * Create Date   : 2013-03-10
  */
 
 #include "global.h"
 
-#ifndef EXIT_H
-#define EXIT_H
+#ifndef KEYFILE_H
+#define KEYFILE_H
 
-void exit_func();
+gboolean parse_keyfile();
 
 #endif

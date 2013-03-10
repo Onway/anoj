@@ -1,6 +1,7 @@
 /*
  * -*- coding: utf-8 -*-
- * Author        : liuyi <aluohuai@126.com>
+ * Filename      : global.c
+ * Author        : Liu Yi <aluohuai@126.com>
  * Create Date   : 2013-03-10
  */
 
@@ -23,7 +24,7 @@ GString * datadir;
 GString * lang;
 char * const * command;
 
-GKeyFile * cfile;
+GKeyFile * kfile;
 GOptionContext * option;
 
 Result * result;
@@ -37,6 +38,13 @@ init_global()
     workdir = g_string_new("");
     datadir = g_string_new("");
     lang = g_string_new("");
-
     g_assert(input && output && answer && workdir && datadir && lang);
+
+    result = (Result *) malloc(sizeof(Result));
+    g_assert(result);
+
+    result->code = EXIT_IE;
+    result->msg = g_string_new("");
+    result->gerr = NULL;
+    g_assert(result->msg);
 }
