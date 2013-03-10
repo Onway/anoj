@@ -123,3 +123,51 @@ struct Case
     const char * workdir;
     char * const command[];
 }
+
+keyfile:
+[DEFAULT]
+[PARSER]
+[SIGNAL]
+[ENVIRON]
+[RESOURCE]
+[SYSCALL]
+
+#define SIGNAL_NUM 70
+#define SYSCALL_NUM 400
+#define RESOURCE_NUM 20
+
+int time;
+int memory;
+int fsize;
+int preused;
+
+int signal_rule[SIGNAL_NUM]
+gboolean syscall_rule[SYSCALL_NUM]
+struct rlimit resource_rule[RESOURCE_NUM]
+
+char * input;
+char * output;
+char * answer;
+char * workdir;
+char * datadir;
+char * lang
+char * const * command;
+
+GKeyFile * cfile;
+GOptionContext * options;
+
+Result * result;
+
+typedef struct
+{
+    Status code;
+    int time;
+    int memory;
+    char * msg;
+    GError * gerr;
+}Result;
+
+typedef enum
+{
+
+}Stauts;
