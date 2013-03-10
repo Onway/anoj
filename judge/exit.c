@@ -25,7 +25,7 @@ exit_func()
                        break;
         case EXIT_RE : printf("Runtime Error\n");
                        break;
-        case EXIT_IE : print("Internal Error\n");
+        case EXIT_IE : printf("Internal Error\n");
                        break;
         case EXIT_TLE : printf("Time Limit Exceeded\n");
                         break;

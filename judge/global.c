@@ -25,7 +25,6 @@ GString * lang;
 char * const * command;
 
 GKeyFile * kfile;
-GOptionContext * option;
 
 Result * result;
 
@@ -41,6 +40,7 @@ init_global()
     g_assert(input && output && answer && workdir && datadir && lang);
 
     result = (Result *) malloc(sizeof(Result));
+    memset(result, 0, sizeof(Result));
     g_assert(result);
 
     result->code = EXIT_IE;
