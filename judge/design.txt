@@ -20,6 +20,7 @@ WORK_DIRECTORY=/tmp
 RLIMIT_AS=
 RLIMIT_CORE=
 RLIMIT_CPU=
+RLIMIT_FSIZE=
 
 [SIGNAL]
 SIGHUP=
@@ -50,4 +51,75 @@ struct signal_element
 {
     int signum;
     int action;
+}
+
+struct Child
+{
+    int time;
+    int fsize;
+    const char * input;
+    costt char * output;
+    const char * workdir;
+    char * const * command;
+    const GList * reslist;
+}
+
+void manage_child(struct childin *chdin);
+
+struct Comparison
+{
+    const char * output;
+    const char * answer;
+}
+
+struct Result
+{
+   enum status code;
+   int time;
+   int memory;
+   GString * msg;
+}
+
+enum Status
+{
+    EXIT_AC,
+    EXIT_PE,
+    EXIT_WA,
+    EXIT_RE,
+    EXIT_TLE,
+    EXIT_MLE,
+    EXIT_OLE,
+    EXIT_IE,
+}
+
+void compare_result(struct comparison * cin, struct result * res);
+static void compare_static(struct comparison * cin, struct result * res);
+static void compare_dynamic(struct comparison * cin, struct result * res);
+
+utility.c
+int is_nonprint_char(char c);
+enum Status compare_string(...);
+void random_string(char * ranstr);
+int is_memory_syscall(int scno);
+void handle_syscall(pid_t child, int scno, struct Result * res);
+void handle_signal(pid_t child, int signo, struct Result * res);
+void handle_vmsize(pid_t child, int memory, struct Result * res);
+
+void exit_func(struct Result * res);
+
+case.c
+manage_before_exec
+manage_after_exec
+
+struct Case
+{
+    int time;
+    int memory;
+    int fsize;
+
+    const char * input;
+    const char * output;
+    const char * ansfile;
+    const char * workdir;
+    char * const command[];
 }

@@ -1,0 +1,5 @@
+kubuntu 12.04.1
+
+sudo apt-get install git
+sudo apt-get install pkg-config
+sudo apt-get install libglib2.0-dev
