@@ -103,7 +103,7 @@ parse_preused(GKeyFile * kfile)
 {
     GError * gerr = NULL;
 
-    preused = g_key_file_get_integer(kfile, "PARSE", lang, &gerr);
+    preused = g_key_file_get_integer(kfile, "PARSER", lang, &gerr);
     if (gerr) {
         g_string_assign(result->err, gerr->message);
         g_error_free(gerr);
@@ -116,20 +116,19 @@ static gboolean
 parse_signal(GKeyFile * kfile)
 {
     GError * gerr = NULL;
-    gsize * length = NULL;
+    gsize  length;
     char * group = "SIGNAL";
     char ** keys = NULL;
     char ** key;
     int value;
 
-    keys = g_key_file_get_keys(kfile, group, length, &gerr);
+    keys = g_key_file_get_keys(kfile, group, &length, &gerr);
     if (gerr) {
         g_string_assign(result->err, gerr->message);
         g_error_free(gerr);
         return FALSE;
     }
     if (!length) return TRUE;
-    g_free(length);
     g_assert(keys);
 
     for (key = keys; *key != NULL; ++key) {
@@ -149,20 +148,19 @@ static gboolean
 parse_syscall(GKeyFile * kfile)
 {
     GError * gerr = NULL;
-    gsize * length = NULL;
+    gsize length;
     char * group = "SYSCALL";
     char ** keys = NULL;
     char ** key;
     gboolean value;
 
-    keys = g_key_file_get_keys(kfile, group, length, &gerr);
+    keys = g_key_file_get_keys(kfile, group, &length, &gerr);
     if (gerr) {
         g_string_assign(result->err, gerr->message);
         g_error_free(gerr);
         return FALSE;
     }
     if (!length) return TRUE;
-    g_free(length);
     g_assert(keys);
 
     for (key = keys; *key != NULL; ++key) {
@@ -182,7 +180,7 @@ static gboolean
 parse_resource(GKeyFile * kfile)
 {
     GError * gerr = NULL;
-    gsize * length = NULL;
+    gsize length;
     char * group = "RESOURCE";
     char ** keys = NULL;
     char ** key;
@@ -190,32 +188,32 @@ parse_resource(GKeyFile * kfile)
     int i;
     rlim_t lcur, lmax;
 
-    keys = g_key_file_get_keys(kfile, group, length, &gerr);
+    keys = g_key_file_get_keys(kfile, group, &length, &gerr);
     if (gerr) {
         g_string_assign(result->err, gerr->message);
         g_error_free(gerr);
         return FALSE;
     }
     if (!length) return TRUE;
-    g_free(length);
     g_assert(keys);
 
     for (key = keys; *key != NULL; ++key) {
-        value = g_key_file_get_string_list(kfile, group, *key, length, &gerr);
+        printf("%s\n", *key);
+        value = g_key_file_get_string_list(kfile, group, *key, &length, &gerr);
         if (gerr) {
             g_string_assign(result->err, gerr->message);
             g_error_free(gerr);
             return FALSE;
         }
-        if (*length != 2) {
+        if (length != 2) {
             g_string_printf(result->err, "Invalid key-value %s", *key);
             return FALSE;
         }
 
         !strcmp(value[0], "RLIM_INFINITY") ?
-            (lcur = RLIM_INFINITY) : (lcur = atoi(value[0]));
+            (lcur = RLIM_INFINITY) : (lcur = atoll(value[0]));
         !strcmp(value[1], "RLIM_INFINITY") ?
-            (lmax = RLIM_INFINITY) : (lmax = atoi(value[1]));
+            (lmax = RLIM_INFINITY) : (lmax = atoll(value[1]));
 
         auto_resource_rule(*key, lcur, lmax);
     }
@@ -227,20 +225,19 @@ static gboolean
 parse_environ(GKeyFile * kfile)
 {
     GError * gerr = NULL;
-    gsize * length = NULL;
+    gsize length;
     char * group = "ENVIRON";
     char ** keys = NULL;
     char ** key;
     char * value;
 
-    keys = g_key_file_get_keys(kfile, group, length, &gerr);
+    keys = g_key_file_get_keys(kfile, group, &length, &gerr);
     if (gerr) {
         g_string_assign(result->err, gerr->message);
         g_error_free(gerr);
         return FALSE;
     }
     if (!length) return TRUE;
-    g_free(length);
     g_assert(keys);
 
     for (key = keys; *key != NULL; ++key) {

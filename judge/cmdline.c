@@ -44,8 +44,6 @@ static GOptionEntry entries[] =
     {NULL}
 };
 
-static void test();
-
 gboolean
 parse_cmdline(int *argc, char ***argv)
 {
@@ -69,24 +67,5 @@ parse_cmdline(int *argc, char ***argv)
     else
         command = &(*argv)[1];
 
-    test();
     return TRUE;
-}
-
-static void
-test()
-{
-    printf("time = %d\n", ltime);
-    printf("memory = %d\n", memory);
-    printf("fsize = %d\n", fsize);
-    lang != NULL && printf("lang = %s\n", lang);
-    cfgfile && printf("cfgfile = %s\n", cfgfile);
-    workdir && printf("workdir = %s\n", workdir);
-    datadir && printf("datadir = %s\n", datadir);
-    printf("command = ");
-
-    char * const * ix;
-    for (ix = command; *ix != NULL; ++ix)
-        printf("%s ", *ix);
-    printf("\n");
 }
