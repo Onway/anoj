@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/time.h>
+#include <sys/syscall.h>
 #include <sys/resource.h>
 
 #ifndef GLOBAL_H
@@ -43,6 +44,18 @@ typedef struct
     GString * msg;
     GString * err;
 }Result;
+
+typedef struct
+{
+    int resource;
+    struct rlimit lmt;
+}Resource;
+
+typedef struct
+{
+    const char * key;
+    const char * value;
+}Environ;
 
 void init_global();
 

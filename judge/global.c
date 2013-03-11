@@ -14,7 +14,8 @@ int preused;
 
 int signal_rule[SIGNAL_NUM];
 gboolean syscall_rule[SYSCALL_NUM];
-struct rlimit resource_rule[RESOURCE_NUM];
+GSList * resource_rule;
+GSList * environ_rule;
 
 GString * input;
 GString * output;
@@ -26,7 +27,6 @@ char * datadir;
 char * lang;
 char * const * command;
 
-GKeyFile * kfile;
 Result * result;
 
 void
@@ -39,10 +39,12 @@ init_global()
 
     result = (Result *) malloc(sizeof(Result));
     g_assert(result);
-
     result->time = result->memory = 0;
     result->code = EXIT_IE;
     result->msg = g_string_new("");
     result->err = g_string_new("");
     g_assert(result->msg && result->err);
+
+    memset(signal_rule, 0, sizeof(int) * SIGNAL_NUM);
+    memset(syscall_rule, 0, sizeof(gboolean) * SYSCALL_NUM);
 }

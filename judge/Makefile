@@ -15,5 +15,8 @@ keyfile:
 cmdline:
 	gcc -c cmdline.c $(GLIB)
 
+autorule:
+	gcc -c autorule.c $(GLIB)
+
 clean:
-	rm *.o *.out
+	rm -f *.o *.out

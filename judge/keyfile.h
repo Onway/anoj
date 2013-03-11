@@ -6,6 +6,7 @@
  */
 
 #include "global.h"
+#include "autorule.h"
 
 #ifndef KEYFILE_H
 #define KEYFILE_H

@@ -80,9 +80,9 @@ test()
     printf("memory = %d\n", memory);
     printf("fsize = %d\n", fsize);
     lang != NULL && printf("lang = %s\n", lang);
-    cfgfile != NULL && printf("cfgfile = %s\n", cfgfile);
-    workdir != NULL && printf("workdir = %s\n", workdir);
-    datadir != NULL && printf("datadir = %s\n", datadir);
+    cfgfile && printf("cfgfile = %s\n", cfgfile);
+    workdir && printf("workdir = %s\n", workdir);
+    datadir && printf("datadir = %s\n", datadir);
     printf("command = ");
 
     char * const * ix;
