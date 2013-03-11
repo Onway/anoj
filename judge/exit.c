@@ -12,11 +12,8 @@ extern Result * result;
 void
 exit_func()
 {
-    g_assert(result != NULL);
-
+    printf("Result: ");
     switch(result->code) {
-        printf("Result: ");
-
         case EXIT_AC : printf("Accetped\n");
                        break;
         case EXIT_PE : printf("Presentation Error\n");
@@ -37,14 +34,8 @@ exit_func()
 
     printf("Time: %d\n", result->time);
     printf("Memory: %d\n", result->memory);
-
-    g_assert(result->msg != NULL);
     printf("Message: %s\n", result->msg->str);
-
-    if (result->gerr == NULL)
-        printf("Error: \n");
-    else
-        printf("Error: %s\n", result->gerr->message);
+    printf("Error: %s\n", result->err->str);
 
     exit(0);
 }   

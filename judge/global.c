@@ -19,13 +19,14 @@ struct rlimit resource_rule[RESOURCE_NUM];
 GString * input;
 GString * output;
 GString * answer;
-GString * workdir;
-GString * datadir;
-GString * lang;
+
+char * cfgfile;
+char * workdir;
+char * datadir;
+char * lang;
 char * const * command;
 
 GKeyFile * kfile;
-
 Result * result;
 
 void
@@ -34,17 +35,14 @@ init_global()
     input = g_string_new("");
     output = g_string_new("");
     answer = g_string_new("");
-    workdir = g_string_new("");
-    datadir = g_string_new("");
-    lang = g_string_new("");
-    g_assert(input && output && answer && workdir && datadir && lang);
+    g_assert(input && output && answer);
 
     result = (Result *) malloc(sizeof(Result));
-    memset(result, 0, sizeof(Result));
     g_assert(result);
 
+    result->time = result->memory = 0;
     result->code = EXIT_IE;
     result->msg = g_string_new("");
-    result->gerr = NULL;
-    g_assert(result->msg);
+    result->err = g_string_new("");
+    g_assert(result->msg && result->err);
 }

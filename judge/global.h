@@ -41,7 +41,7 @@ typedef struct
     int time;
     int memory;
     GString * msg;
-    GError * gerr;
+    GString * err;
 }Result;
 
 void init_global();
