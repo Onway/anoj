@@ -8,6 +8,7 @@
 #include "global.h"
 #include "cmdline.h"
 #include "keyfile.h"
+#include "data.h"
 
 extern int ltime;
 extern int memory;
@@ -32,6 +33,7 @@ extern Result * result;
 
 static void cmdline_test();
 static void keyfile_test();
+static void data_test();
 static void each_resource(gpointer data, gpointer user_data);
 static void each_environ(gpointer data, gpointer user_data);
 
@@ -43,7 +45,9 @@ main(int argc, char *argv[])
     !parse_cmdline(&argc, &argv) && exit_func();
     /* cmdline_test(); */
     !parse_keyfile() && exit_func();
-    keyfile_test();
+    /* keyfile_test(); */
+    !parse_data() && exit_func();
+    data_test();
 
     return 0;
 }
@@ -96,6 +100,17 @@ cmdline_test()
     for (ix = command; *ix != NULL; ++ix)
         printf("%s ", *ix);
     printf("\n");
+}
+
+static void
+data_test()
+{
+    while (next_data()) {
+        printf("input = %s\n", input->str);
+        printf("answer = %s\n", answer->str);
+        printf("output = %s\n", output->str);
+        printf("\n");
+    }
 }
 
 static void
