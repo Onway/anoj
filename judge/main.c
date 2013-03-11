@@ -33,6 +33,7 @@ extern Result * result;
 static void cmdline_test();
 static void keyfile_test();
 static void each_resource(gpointer data, gpointer user_data);
+static void each_environ(gpointer data, gpointer user_data);
 
 int
 main(int argc, char *argv[])
@@ -74,6 +75,10 @@ keyfile_test()
     printf("resource:\n");
     g_slist_foreach(resource_rule, each_resource, NULL);
     printf("\n");
+
+    printf("environ:\n");
+    g_slist_foreach(environ_rule, each_environ, NULL);
+    printf("\n");
 }
 
 static void
@@ -96,7 +101,14 @@ cmdline_test()
 static void
 each_resource(gpointer data, gpointer user_data)
 {
-    Resource * d;
+    Resource * d = (Resource *)data;
     printf("%d = %ld;%ld\n",
             d->resource, d->lmt.rlim_cur, d->lmt.rlim_max);
+}
+
+static void
+each_environ(gpointer data, gpointer user_data)
+{
+    Environ * e = (Environ *)data;
+    printf("%s = %s\n", e->key, e->value);
 }

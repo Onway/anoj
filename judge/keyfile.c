@@ -198,7 +198,6 @@ parse_resource(GKeyFile * kfile)
     g_assert(keys);
 
     for (key = keys; *key != NULL; ++key) {
-        printf("%s\n", *key);
         value = g_key_file_get_string_list(kfile, group, *key, &length, &gerr);
         if (gerr) {
             g_string_assign(result->err, gerr->message);
@@ -211,9 +210,9 @@ parse_resource(GKeyFile * kfile)
         }
 
         !strcmp(value[0], "RLIM_INFINITY") ?
-            (lcur = RLIM_INFINITY) : (lcur = atoll(value[0]));
+            (lcur = RLIM_INFINITY) : (lcur = atol(value[0]));
         !strcmp(value[1], "RLIM_INFINITY") ?
-            (lmax = RLIM_INFINITY) : (lmax = atoll(value[1]));
+            (lmax = RLIM_INFINITY) : (lmax = atol(value[1]));
 
         auto_resource_rule(*key, lcur, lmax);
     }
