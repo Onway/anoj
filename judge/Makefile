@@ -21,5 +21,8 @@ autorule:
 data:
 	gcc -c data.c $(GLIB)
 
+child:
+	gcc -c child.c $(GLIB)
+
 clean:
 	rm -f *.o *.out
