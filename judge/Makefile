@@ -1,7 +1,7 @@
 GLIB=`pkg-config --libs --cflags glib-2.0`
 
 main:
-	gcc main.c global.c cmdline.c keyfile.c exit.c autorule.c data.c $(GLIB) -g
+	gcc main.c global.c cmdline.c keyfile.c exit.c autorule.c data.c child.c $(GLIB) -g
 
 exit:
 	gcc -c exit.c $(GLIB)

@@ -28,12 +28,12 @@ extern char * workdir;
 extern char * datadir;
 extern char * lang;
 extern char * const * command;
-
 extern Result * result;
 
 static void cmdline_test();
 static void keyfile_test();
 static void data_test();
+static void child_test();
 static void each_resource(gpointer data, gpointer user_data);
 static void each_environ(gpointer data, gpointer user_data);
 
@@ -47,7 +47,9 @@ main(int argc, char *argv[])
     !parse_keyfile() && exit_func();
     /* keyfile_test(); */
     !parse_data() && exit_func();
-    data_test();
+    /* data_test(); */
+
+    child_test();
 
     return 0;
 }
@@ -110,6 +112,43 @@ data_test()
         printf("answer = %s\n", answer->str);
         printf("output = %s\n", output->str);
         printf("\n");
+    }
+}
+
+static void
+child_test()
+{
+    pid_t child;
+    int status;
+    char * content;
+
+    while (next_data()) {
+        child = fork();
+        if (child == 0)
+            start_child();
+        
+        while (1) {
+            wait(&status);
+            if (WIFEXITED(status)) {
+                printf("child exit with code %d\n", WEXITSTATUS(status));
+                printf("child output:\n");
+                g_file_get_contents(output->str, &content, NULL, NULL);
+                content && printf("%s", content);
+            } else if (WIFSIGNALED(status)) {
+                printf("child killed by signal: %d\n", WTERMSIG(status));
+            } else if (WIFSTOPPED(status)) {
+                if (WSTOPSIG(status) == SIGTRAP) {
+                    ptrace(PTRACE_CONT, child, NULL, NULL);
+                    continue;
+                }
+                printf("child stoped signal: %d, kill it\n", WSTOPSIG(status));
+                kill(child, SIGKILL);
+            } else
+                printf("unknow child exit status\n");
+            break;
+        }
+
+        unlink(output->str);
     }
 }
 

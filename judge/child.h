@@ -10,6 +10,8 @@
 #ifndef CHILD_H
 #define CHILD_H
 
+#define FILE_NODE (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
+
 void start_child();
 
 #endif

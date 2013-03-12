@@ -46,11 +46,11 @@ set_io()
     int infd, outfd;
 
     infd = open(input->str, O_RDONLY);
-    outfd = open(output->str, O_WRONLY);
+    outfd = open(output->str, O_WRONLY | O_CREAT, FILE_NODE);
 
     dup2(infd, STDIN_FILENO);
     dup2(outfd, STDOUT_FILENO);
-
+    
     close(infd);
     close(outfd);
     close(STDERR_FILENO);
