@@ -8,6 +8,7 @@
 #include "child.h"
 
 extern int ltime;
+extern int fsize;
 extern char * workdir;
 extern char * const * command;
 extern GString * input;
@@ -67,6 +68,9 @@ reset_resource()
         t.rlim_cur = ltime / 1000 + 2;
     t.rlim_max = t.rlim_cur + 1;
     setrlimit(RLIMIT_CPU, &t);
+
+    t.rlim_cur = t.rlim_max = fsize * 1024;
+    setrlimit(RLIMIT_FSIZE, &t);
 }
 
 static void
