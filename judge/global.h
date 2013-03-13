@@ -73,6 +73,4 @@ typedef struct
     const char * value;
 }Environ;
 
-void init_global();
-
 #endif

@@ -243,3 +243,54 @@ each_environ(gpointer data, gpointer user_data)
     Environ * e = (Environ *)data;
     printf("%s = %s\n", e->key, e->value);
 }
+
+static void
+init_varible()
+{
+    input = g_string_new("");
+    output = g_string_new("");
+    answer = g_string_new("");
+    g_assert(input && output && answer);
+
+    result = (Result *) malloc(sizeof(Result));
+    g_assert(result);
+    result->time = result->memory = 0;
+    result->code = EXIT_IE;
+    result->msg = g_string_new("");
+    result->err = g_string_new("");
+    g_assert(result->msg && result->err);
+
+    memset(signal_rule, 0, sizeof(int) * SIGNAL_NUM);
+    memset(syscall_rule, 0, sizeof(gboolean) * SYSCALL_NUM);
+}
+
+static void
+exit_func()
+{
+    printf("Result: ");
+    switch(result->code) {
+        case EXIT_AC : printf("Accetped\n");
+                       break;
+        case EXIT_PE : printf("Presentation Error\n");
+                       break;
+        case EXIT_WA : printf("Wrong Answer\n");
+                       break;
+        case EXIT_RE : printf("Runtime Error\n");
+                       break;
+        case EXIT_IE : printf("Internal Error\n");
+                       break;
+        case EXIT_TLE : printf("Time Limit Exceeded\n");
+                        break;
+        case EXIT_MLE : printf("Memory Limit Exceeded\n");
+                        break;
+        case EXIT_OLE : printf("Output Limit Exceeded\n");
+                        break;
+    }
+
+    printf("Time: %d\n", result->time);
+    printf("Memory: %d\n", result->memory);
+    printf("Message: %s\n", result->msg->str);
+    printf("Error: %s\n", result->err->str);
+
+    exit(0);
+}   

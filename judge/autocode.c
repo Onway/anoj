@@ -1,8 +1,8 @@
 /*
  * -*- coding: utf-8 -*-
- * Filename      : autorule.c
+ * Filename      : autocode.c
  * Author        : Liu Yi <aluohuai@126.com>
- * Create Date   : 2013-03-11
+ * Create Date   : 2013-03-13
  */
 
 /*
@@ -11,7 +11,7 @@
  * /usr/include/i386-linux-gnu/bits/syscall.h
  */
 
-#include "autorule.h"
+#include "autocode.h"
 
 extern int signal_rule[];
 extern int syscall_rule[];

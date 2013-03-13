@@ -1,14 +1,14 @@
 /*
  * -*- coding: utf-8 -*-
- * Filename      : autorule.h
+ * Filename      : autocode.h
  * Author        : Liu Yi <aluohuai@126.com>
  * Create Date   : 2013-03-11
  */
 
 #include "global.h"
 
-#ifndef AUTORULE_H
-#define AUTORULE_H
+#ifndef AUTOCODE_H
+#define AUTOCODE_H
 
 void auto_signal_rule(const char * key, int value);
 void auto_syscall_rule(const char * key, gboolean value);

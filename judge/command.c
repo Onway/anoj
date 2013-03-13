@@ -1,29 +1,42 @@
 /*
  * -*- coding: utf-8 -*-
- * Filename      : judger.c
+ * Filename      : command.c
  * Author        : Liu Yi <aluohuai@126.com>
  * Create Date   : 2013-03-13
  */
 
-#include "judger.h"
+#include "command.h"
 
-extern int memory;
 extern int ltime;
+extern int fsize;
+extern int memory;
 extern int preused;
-extern Result * result;
+extern char * workdir;
+extern char * const * command;
+extern GString * input;
+extern GString * output;
+extern GString * answer;
+extern GSList * resource_rule;
+extern GSList * environ_rule;
 extern int signal_rule[];
 extern gboolean syscall_rule[];
+extern Result * result;
 
 static int pre_time;
 static int pre_memory;
-static jmp_buf user_jbuf;
+static jmp_buf jbuf;
 
-static void user_alarm(int signo);
 static int get_vmsize(int child);
-static void trace_user_child(int child);
+static void alarm_func(int signo);
+static void trace_child(int child);
+static void setup_child();
+static void setup_io();
+static void setup_resource();
+static void foreach_resource(gpointer data, gpointer user_data);
+static void foreach_environ(gpointer data, gpointer user_data);
 
 void
-judge_user_program()
+execute_command()
 {
     int status;
     pid_t child;
@@ -33,7 +46,7 @@ judge_user_program()
 
     child = fork();
     if (child == 0)
-       start_user_child();
+       setup_child();
 
     wait3(&status, 0, &used);
     if (!WIFSTOPPED(status)) {
@@ -66,25 +79,25 @@ judge_user_program()
     pre_memory = used.ru_minflt * getpagesize() / 1024;
 
 
-    if (setjmp(user_jbuf)) {
+    if (setjmp(jbuf)) {
         result->code = EXIT_TLE;
         return;
     }
-    signal(SIGALRM, user_alarm);
+    signal(SIGALRM, alarm_func);
 
     if (ltime % 1000)
         alarm(ltime / 1000 + 3);
     else
         alarm(ltime / 1000 + 2);
     ptrace(PTRACE_SYSCALL, child, NULL, NULL);
-    trace_user_child(child);
+    trace_child(child);
     alarm(0);
 
     return;
 }
 
 static void
-trace_user_child(int child)
+trace_child(int child)
 {
     int status;
     int lst_time;
@@ -163,6 +176,61 @@ trace_user_child(int child)
     } // end while
 } // end function
 
+static void
+setup_child()
+{
+    char ** env;
+
+    env = g_get_environ();
+
+    chdir(workdir);
+    setup_io();
+    g_slist_foreach(resource_rule, foreach_resource, NULL);
+    g_slist_foreach(environ_rule, foreach_environ, &env);
+    setup_resource();
+
+    if (ptrace(PTRACE_TRACEME, 0, NULL, NULL))
+        exit(1);
+
+    execvpe(command[0], command, (char * const *)env);
+    exit(2);
+}
+
+static void
+setup_io()
+{
+    int infd, outfd;
+
+    infd = open(input->str, O_RDONLY);
+    outfd = open(output->str, O_WRONLY | O_CREAT, FMODE);
+
+    dup2(infd, STDIN_FILENO);
+    dup2(outfd, STDOUT_FILENO);
+    
+    close(infd);
+    close(outfd);
+    close(STDERR_FILENO);
+}
+
+static void 
+setup_resource()
+{
+    struct rlimit t;
+
+    if (ltime % 1000 == 0)
+        t.rlim_cur = ltime / 1000 + 1;
+    else
+        t.rlim_cur = ltime / 1000 + 2;
+    t.rlim_max = t.rlim_cur + 1;
+    setrlimit(RLIMIT_CPU, &t);
+
+    t.rlim_cur = t.rlim_max = fsize * 1024;
+    setrlimit(RLIMIT_FSIZE, &t);
+
+    t.rlim_cur = t.rlim_max = RLIM_INFINITY;
+    setrlimit(RLIMIT_AS, &t);
+}
+
 static int
 get_vmsize(pid_t child)
 {
@@ -181,8 +249,32 @@ get_vmsize(pid_t child)
 }
 
 static void
-user_alarm(int signo)
+alarm_func(int signo)
 {
     if (signo == SIGALRM)
-        longjmp(user_jbuf, 1);
+        longjmp(jbuf, 1);
+}
+
+static void
+foreach_resource(gpointer data, gpointer user_data)
+{
+    Resource * ptr;
+    
+    ptr = (Resource *)data;
+    setrlimit(ptr->resource, &ptr->lmt);
+}
+
+static void
+foreach_environ(gpointer data, gpointer user_data)
+{
+    Environ * ptr;
+    char *** env;
+
+    ptr = (Environ *)data;
+    env = (char ***)user_data;
+
+    if (!strcmp(ptr->value, ""))
+        *env = g_environ_unsetenv(*env, ptr->key);
+    else
+        *env = g_environ_setenv(*env, ptr->key, ptr->value, TRUE);
 }
