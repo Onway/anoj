@@ -27,5 +27,8 @@ child:
 answer:
 	gcc -c answer.c $(GLIB)
 
+judger:
+	gcc -c judger.c $(GLIB)
+
 clean:
 	rm -f *.o *.out
