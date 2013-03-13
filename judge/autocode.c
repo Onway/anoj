@@ -11,7 +11,8 @@
  * /usr/include/i386-linux-gnu/bits/syscall.h
  */
 
-#include "autocode.h"
+/* #include "autocode.h" */
+#include "global.h"
 
 extern int signal_rule[];
 extern int syscall_rule[];
