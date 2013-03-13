@@ -12,6 +12,7 @@
 
 #define FILE_NODE (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
 
-void start_child();
+void start_user_child();
+void start_special_child();
 
 #endif

@@ -9,30 +9,34 @@
 
 extern int ltime;
 extern int fsize;
+extern int memory;
 extern char * workdir;
 extern char * const * command;
 extern GString * input;
 extern GString * output;
+extern GString * answer;
 extern GSList * resource_rule;
 extern GSList * environ_rule;
 
-static void set_io();
-static void reset_resource();
+static void set_user_io();
+static void reset_user_resource();
+static void set_special_io();
+static void reset_special_resource();
 static void foreach_resource(gpointer data, gpointer user_data);
 static void foreach_environ(gpointer data, gpointer user_data);
 
 void
-start_child()
+start_user_child()
 {
     char ** env;
 
     env = g_get_environ();
 
     chdir(workdir);
-    set_io();
+    set_user_io();
     g_slist_foreach(resource_rule, foreach_resource, NULL);
     g_slist_foreach(environ_rule, foreach_environ, &env);
-    reset_resource();
+    reset_user_resource();
 
     if (ptrace(PTRACE_TRACEME, 0, NULL, NULL))
         exit(1);
@@ -41,8 +45,28 @@ start_child()
     exit(2);
 }
 
+void
+start_special_child()
+{
+    char ** env;
+
+    env = g_get_environ();
+
+    chdir(workdir);
+    set_special_io();
+    g_slist_foreach(resource_rule, foreach_resource, NULL);
+    g_slist_foreach(environ_rule, foreach_environ, &env);
+    reset_special_resource();
+
+    if (ptrace(PTRACE_TRACEME, 0, NULL, NULL))
+        exit(1);
+
+    execle(answer->str, answer->str, (char *)NULL, (char * const *)env);
+    exit(2);
+}
+
 static void
-set_io()
+set_user_io()
 {
     int infd, outfd;
 
@@ -57,8 +81,21 @@ set_io()
     close(STDERR_FILENO);
 }
 
+static void
+set_special_io()
+{
+    int infd;
+
+    infd = open(output->str, O_RDONLY);
+    dup2(infd, STDIN_FILENO);
+
+    close(infd);
+    close(STDOUT_FILENO);
+    close(STDERR_FILENO);
+}
+
 static void 
-reset_resource()
+reset_user_resource()
 {
     struct rlimit t;
 
@@ -71,6 +108,30 @@ reset_resource()
 
     t.rlim_cur = t.rlim_max = fsize * 1024;
     setrlimit(RLIMIT_FSIZE, &t);
+
+    t.rlim_cur = t.rlim_max = RLIM_INFINITY;
+    setrlimit(RLIMIT_AS, &t);
+}
+
+static void
+reset_special_resource()
+{
+    struct rlimit t;
+
+    t.rlim_cur = t.rlim_max = 0;
+    setrlimit(RLIMIT_FSIZE, &t);
+
+    getrlimit(RLIMIT_CPU, &t);
+    if (t.rlim_cur == RLIM_INFINITY || t.rlim_max == RLIM_INFINITY) {
+        t.rlim_cur = t.rlim_max = ltime / 1000 + 2;
+        setrlimit(RLIMIT_CPU, &t);
+    }
+
+    getrlimit(RLIMIT_AS, &t);
+    if (t.rlim_cur == RLIM_INFINITY || t.rlim_max == RLIM_INFINITY) {
+        t.rlim_cur = t.rlim_max = memory * 1024;
+        setrlimit(RLIMIT_CPU, &t);
+    }
 }
 
 static void

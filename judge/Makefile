@@ -24,5 +24,8 @@ data:
 child:
 	gcc -c child.c $(GLIB)
 
+answer:
+	gcc -c answer.c $(GLIB)
+
 clean:
 	rm -f *.o *.out

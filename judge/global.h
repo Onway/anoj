@@ -12,7 +12,9 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
+#include <setjmp.h>
 #include <sys/time.h>
+#include <sys/user.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -42,6 +44,13 @@ typedef enum
     EXIT_OLE,
     EXIT_IE,
 }Status;
+
+typedef enum
+{
+    SIG_NOTHING,
+    SIG_DELIVER,
+    SIG_TERMINATE,
+}Sigaction;
 
 typedef struct
 {

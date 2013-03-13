@@ -33,7 +33,7 @@ extern Result * result;
 static void cmdline_test();
 static void keyfile_test();
 static void data_test();
-static void child_test();
+static void user_child_test();
 static void each_resource(gpointer data, gpointer user_data);
 static void each_environ(gpointer data, gpointer user_data);
 
@@ -49,7 +49,7 @@ main(int argc, char *argv[])
     !parse_data() && exit_func();
     /* data_test(); */
 
-    child_test();
+    user_child_test();
 
     return 0;
 }
@@ -116,7 +116,7 @@ data_test()
 }
 
 static void
-child_test()
+user_child_test()
 {
     pid_t child;
     int status;
@@ -125,7 +125,7 @@ child_test()
     while (next_data()) {
         child = fork();
         if (child == 0)
-            start_child();
+            start_user_child();
         
         while (1) {
             wait(&status);
