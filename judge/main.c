@@ -9,6 +9,7 @@
 #include "cmdline.h"
 #include "keyfile.h"
 #include "data.h"
+#include "answer.h"
 
 extern int ltime;
 extern int memory;
@@ -34,6 +35,7 @@ static void cmdline_test();
 static void keyfile_test();
 static void data_test();
 static void user_child_test();
+static void answer_test();
 static void each_resource(gpointer data, gpointer user_data);
 static void each_environ(gpointer data, gpointer user_data);
 
@@ -49,7 +51,8 @@ main(int argc, char *argv[])
     !parse_data() && exit_func();
     /* data_test(); */
 
-    user_child_test();
+    /* user_child_test(); */
+    answer_test();
 
     return 0;
 }
@@ -150,6 +153,51 @@ user_child_test()
 
         unlink(output->str);
     }
+}
+
+static void
+answer_test()
+{
+    pid_t child;
+    int status;
+    char * content;
+    struct stat sbuf;
+
+    while (next_data()) {
+        child = fork();
+        if (child == 0)
+            start_user_child();
+        
+        while (1) {
+            wait(&status);
+            if (WIFEXITED(status)) {
+               stat(answer->str, &sbuf);
+               if (sbuf.st_mode & S_IXOTH)
+                   judge_special_answer();
+               else
+                   judge_common_answer();
+               if (result->code == EXIT_AC)
+                   break;
+               else {
+                   unlink(output->str);
+                   exit_func();
+               }
+            } else if (WIFSIGNALED(status)) {
+                printf("child killed by signal: %d\n", WTERMSIG(status));
+            } else if (WIFSTOPPED(status)) {
+                if (WSTOPSIG(status) == SIGTRAP) {
+                    ptrace(PTRACE_CONT, child, NULL, NULL);
+                    continue;
+                }
+                printf("child stoped signal: %d, kill it\n", WSTOPSIG(status));
+                kill(child, SIGKILL);
+            } else
+                printf("unknow child exit status\n");
+            break;
+        }
+        unlink(output->str);
+    }
+    exit_func();
 }
 
 static void

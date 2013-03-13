@@ -42,11 +42,13 @@ parse_keyfile()
                 G_KEY_FILE_NONE, &gerr);
     if (!suc) {
         gerr ? g_error_free(gerr) : 1;
+        gerr = NULL;
         suc = g_key_file_load_from_file(kfile, first_file,
                 G_KEY_FILE_NONE, &gerr);
     }
     if (!suc) {
         gerr ? g_error_free(gerr) : 1;
+        gerr = NULL;
         suc = g_key_file_load_from_file(kfile, second_file,
                 G_KEY_FILE_NONE, &gerr);
     }

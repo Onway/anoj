@@ -153,7 +153,7 @@ trace_special_child(int child)
     while (1) {
         wait(&status);
 
-        if (WIFEXITTED(status)) {
+        if (WIFEXITED(status)) {
             result->code = WEXITSTATUS(status) % 3;
             return;
         } else if (WIFSIGNALED(status)) {
