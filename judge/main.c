@@ -6,9 +6,6 @@
  */
 
 #include "global.h"
-#include "parse.h"
-#include "command.h"
-#include "judge.h"
 
 int ltime;
 int memory;

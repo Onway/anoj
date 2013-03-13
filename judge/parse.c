@@ -5,7 +5,7 @@
  * Create Date   : 2013-03-13
  */
 
-#include "parse.h"
+#include "global.h"
 
 extern int ltime;
 extern int memory;

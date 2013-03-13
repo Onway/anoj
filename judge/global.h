@@ -32,6 +32,8 @@
 #define SIGNAL_NUM 70
 #define SYSCALL_NUM 400
 #define RESOURCE_NUM 20
+#define FMODE (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
+#define is_nonprint(c) ((c) == '\n' || (c) == '\t' || (c) == ' ')
 
 typedef enum
 {
