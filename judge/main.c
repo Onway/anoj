@@ -36,6 +36,7 @@ static void keyfile_test();
 static void data_test();
 static void user_child_test();
 static void answer_test();
+static void do_judge();
 static void each_resource(gpointer data, gpointer user_data);
 static void each_environ(gpointer data, gpointer user_data);
 
@@ -52,9 +53,37 @@ main(int argc, char *argv[])
     /* data_test(); */
 
     /* user_child_test(); */
-    answer_test();
-
+    /* answer_test(); */
+    do_judge();
     return 0;
+}
+
+static void
+do_judge()
+{
+    struct stat sbuf;
+    int max_time = 0, max_memory = 0;
+    
+    while (next_data()) {
+        judge_user_program();
+        if (result->code != EXIT_AC)
+            exit_func();
+
+        stat(answer->str, &sbuf);
+        if (sbuf.st_mode & S_IXOTH)
+            judge_special_answer();
+        else
+            judge_common_answer();
+        if (result->code != EXIT_AC)
+            exit_func();
+
+        max_time = MAX(max_time, result->time);
+        max_memory = MAX(max_memory, result->memory);
+    }
+
+    result->time = max_time;
+    result->memory = max_memory;
+    exit_func();
 }
 
 static void

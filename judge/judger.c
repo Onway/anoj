@@ -7,8 +7,9 @@
 
 #include "judger.h"
 
-extern memory;
-extern ltime;
+extern int memory;
+extern int ltime;
+extern int preused;
 extern Result * result;
 extern int signal_rule[];
 extern gboolean syscall_rule[];
@@ -53,7 +54,7 @@ judge_user_program()
         return;
         
     }
-    if (get_vmsize(child) > memory) {
+    if (get_vmsize(child) > memory + preused) {
         kill(child, SIGKILL);
         result->code = EXIT_MLE;
         return;
@@ -103,8 +104,8 @@ trace_user_child(int child)
                 used.ru_stime.tv_usec / 1000;
             lst_memory = used.ru_minflt * getpagesize() / 1024;
             result->code = EXIT_AC;
-            result->time = lst_time - pre_time;
-            result->memory = lst_memory - pre_memory;
+            result->time = lst_time - pre_time - preused;
+            result->memory = lst_memory - pre_memory - preused;
             return;
         }
 
@@ -152,7 +153,7 @@ trace_user_child(int child)
             return;
         }
 
-        if (get_vmsize(child) > memory) {
+        if (get_vmsize(child) > memory + preused) {
             kill(child, SIGKILL);
             result->code = EXIT_MLE;
             return;
