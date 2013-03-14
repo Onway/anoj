@@ -35,6 +35,7 @@
 #define FMODE (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
 #define is_nonprint(c) ((c) == '\n' || (c) == '\t' || (c) == ' ')
 
+/* 结果代码，前三个位置不可调换 */
 typedef enum
 {
     EXIT_AC,
@@ -47,6 +48,7 @@ typedef enum
     EXIT_IE,
 }Status;
 
+/* 信号处理方式 */
 typedef enum
 {
     SIG_NOTHING,
@@ -59,8 +61,8 @@ typedef struct
     Status code;
     int time;
     int memory;
-    GString * msg;
-    GString * err;
+    GString * msg; /* 返回用户的信息 */
+    GString * err; /* 错误调式信息 */
 }Result;
 
 typedef struct

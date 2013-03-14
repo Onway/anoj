@@ -7,37 +7,32 @@
 
 #include "global.h"
 
-int ltime;
-int memory;
-int fsize;
-int preused;
+int ltime;                  /* 时间限制 */
+int fsize;                  /* 输出限制 */
+int memory;                 /* 内存限制 */
+int preused;                /* 解析器内存 */
 
+GString * input;            /* 输入文件 */
+GString * output;           /* 输出文件 */
+GString * answer;           /* 答案文件 */
+
+char * cfgfile;             /* 配置文件 */
+char * workdir;             /* 工作目录 */
+char * datadir;             /* 数据目录 */
+char * lang;                /* 程序语言 */
+char * const * command;     /* 被测程序 */
+
+/* 从配置文件转换而来适合程序使用的信息 */
 int signal_rule[SIGNAL_NUM];
 gboolean syscall_rule[SYSCALL_NUM];
 GSList * resource_rule;
 GSList * environ_rule;
+char * feedback[SIGNAL_NUM];
 
-GString * input;
-GString * output;
-GString * answer;
+Result * result;            /* 评测结果 */
 
-char * cfgfile;
-char * workdir;
-char * datadir;
-char * lang;
-char * const * command;
-Result * result;
-
-static void cmdline_test();
-static void keyfile_test();
-static void data_test();
-static void user_child_test();
-static void answer_test();
-static void do_judge();
-static void each_resource(gpointer data, gpointer user_data);
-static void each_environ(gpointer data, gpointer user_data);
-static void init_varible();
-static void exit_func();
+static void init_varible(); /* 全局变量初始化 */
+static void exit_func();    /* 本程序唯一出口 */
 
 int
 main(int argc, char *argv[])
@@ -48,28 +43,21 @@ main(int argc, char *argv[])
     init_varible();
     max_time = max_memory = 0;
 
-    /*
-    !parse_cmdline(&argc, &argv) && exit_func();
-    !parse_keyfile() && exit_func();
-    !parse_data() && exit_func();
-    */
-
     if (!parse_cmdline(&argc, &argv) || !parse_keyfile() || !parse_data())
         exit_func();
 
+    /* 多个输入用例，多次运行程序 */
     while (next_data()) {
         execute_command();
-        if (result->code != EXIT_AC)
-            exit_func();
+        result->code != EXIT_AC ? unlink(output->str), exit_func() : 1;
 
         stat(answer->str, &sbuf);
         sbuf.st_mode & S_IXOTH ? special_judge() : normal_judge();
-
-        if (result->code != EXIT_AC)
-            exit_func();
+        result->code != EXIT_AC ? unlink(output->str), exit_func() : 1;
 
         max_time = MAX(max_time, result->time);
         max_memory = MAX(max_memory, result->memory);
+        unlink(output->str);
     }
 
     result->time = max_time;
@@ -80,51 +68,19 @@ main(int argc, char *argv[])
 }
 
 static void
-do_judge()
-{
-    struct stat sbuf;
-    int max_time = 0, max_memory = 0;
-    
-    while (next_data()) {
-        execute_command();
-        if (result->code != EXIT_AC)
-            exit_func();
-
-        stat(answer->str, &sbuf);
-        if (sbuf.st_mode & S_IXOTH)
-            special_judge();
-        else
-            normal_judge();
-        if (result->code != EXIT_AC)
-            exit_func();
-
-        max_time = MAX(max_time, result->time);
-        max_memory = MAX(max_memory, result->memory);
-    }
-
-    result->time = max_time;
-    result->memory = max_memory;
-    exit_func();
-}
-
-static void
 init_varible()
 {
     input = g_string_new("");
     output = g_string_new("");
     answer = g_string_new("");
-    g_assert(input && output && answer);
+    result = (Result *)malloc(sizeof(Result));
+    g_assert(input && output && answer && result);
 
-    result = (Result *) malloc(sizeof(Result));
-    g_assert(result);
-    result->time = result->memory = 0;
     result->code = EXIT_IE;
+    result->time = result->memory = 0;
     result->msg = g_string_new("");
     result->err = g_string_new("");
     g_assert(result->msg && result->err);
-
-    memset(signal_rule, 0, sizeof(int) * SIGNAL_NUM);
-    memset(syscall_rule, 0, sizeof(gboolean) * SYSCALL_NUM);
 }
 
 static void

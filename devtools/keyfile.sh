@@ -55,6 +55,12 @@ signal()
     echo ""
 }
 
+feedback()
+{
+    echo "[FEEDBACK]"
+    echo "SIGFPE = Floating point exception"
+}
+
 syscall()
 {
     syscall=/usr/include/i386-linux-gnu/bits/syscall.h
@@ -74,4 +80,5 @@ resource
 signal
 syscall
 environ
+feedback
 exit 0

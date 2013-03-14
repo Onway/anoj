@@ -9,15 +9,16 @@
  * reference to:
  * kill -l
  * /usr/include/i386-linux-gnu/bits/syscall.h
+ * man setrlimit
  */
 
-/* #include "autocode.h" */
 #include "global.h"
 
 extern int signal_rule[];
 extern int syscall_rule[];
 extern GSList * resource_rule;
 extern GSList * environ_rule;
+extern char * feedback[];
 
 void
 auto_signal_rule(const char * key, int value)
@@ -146,6 +147,135 @@ auto_signal_rule(const char * key, int value)
         signal_rule[SIGRTMAX-1] = value;
     else if (!strcmp(key, "SIGRTMAX"))
         signal_rule[SIGRTMAX] = value;
+}
+
+void
+auto_feedback(const char * key, const char * value)
+{
+    if (!strcmp(key, "SIGHUP"))
+        feedback[SIGHUP] = value;
+    else if (!strcmp(key, "SIGINT"))
+        feedback[SIGINT] = value;
+    else if (!strcmp(key, "SIGQUIT"))
+        feedback[SIGQUIT] = value;
+    else if (!strcmp(key, "SIGILL"))
+        feedback[SIGILL] = value;
+    else if (!strcmp(key, "SIGTRAP"))
+        feedback[SIGTRAP] = value;
+    else if (!strcmp(key, "SIGABRT"))
+        feedback[SIGABRT] = value;
+    else if (!strcmp(key, "SIGBUS"))
+        feedback[SIGBUS] = value;
+    else if (!strcmp(key, "SIGFPE"))
+        feedback[SIGFPE] = value;
+    else if (!strcmp(key, "SIGKILL"))
+        feedback[SIGKILL] = value;
+    else if (!strcmp(key, "SIGUSR1"))
+        feedback[SIGUSR1] = value;
+    else if (!strcmp(key, "SIGSEGV"))
+        feedback[SIGSEGV] = value;
+    else if (!strcmp(key, "SIGUSR2"))
+        feedback[SIGUSR2] = value;
+    else if (!strcmp(key, "SIGPIPE"))
+        feedback[SIGPIPE] = value;
+    else if (!strcmp(key, "SIGALRM"))
+        feedback[SIGALRM] = value;
+    else if (!strcmp(key, "SIGTERM"))
+        feedback[SIGTERM] = value;
+    else if (!strcmp(key, "SIGSTKFLT"))
+        feedback[SIGSTKFLT] = value;
+    else if (!strcmp(key, "SIGCHLD"))
+        feedback[SIGCHLD] = value;
+    else if (!strcmp(key, "SIGCONT"))
+        feedback[SIGCONT] = value;
+    else if (!strcmp(key, "SIGSTOP"))
+        feedback[SIGSTOP] = value;
+    else if (!strcmp(key, "SIGTSTP"))
+        feedback[SIGTSTP] = value;
+    else if (!strcmp(key, "SIGTTIN"))
+        feedback[SIGTTIN] = value;
+    else if (!strcmp(key, "SIGTTOU"))
+        feedback[SIGTTOU] = value;
+    else if (!strcmp(key, "SIGURG"))
+        feedback[SIGURG] = value;
+    else if (!strcmp(key, "SIGXCPU"))
+        feedback[SIGXCPU] = value;
+    else if (!strcmp(key, "SIGXFSZ"))
+        feedback[SIGXFSZ] = value;
+    else if (!strcmp(key, "SIGVTALRM"))
+        feedback[SIGVTALRM] = value;
+    else if (!strcmp(key, "SIGPROF"))
+        feedback[SIGPROF] = value;
+    else if (!strcmp(key, "SIGWINCH"))
+        feedback[SIGWINCH] = value;
+    else if (!strcmp(key, "SIGIO"))
+        feedback[SIGIO] = value;
+    else if (!strcmp(key, "SIGPWR"))
+        feedback[SIGPWR] = value;
+    else if (!strcmp(key, "SIGSYS"))
+        feedback[SIGSYS] = value;
+    else if (!strcmp(key, "SIGRTMIN"))
+        feedback[SIGRTMIN] = value;
+    else if (!strcmp(key, "SIGRTMIN+1"))
+        feedback[SIGRTMIN+1] = value;
+    else if (!strcmp(key, "SIGRTMIN+2"))
+        feedback[SIGRTMIN+2] = value;
+    else if (!strcmp(key, "SIGRTMIN+3"))
+        feedback[SIGRTMIN+3] = value;
+    else if (!strcmp(key, "SIGRTMIN+4"))
+        feedback[SIGRTMIN+4] = value;
+    else if (!strcmp(key, "SIGRTMIN+5"))
+        feedback[SIGRTMIN+5] = value;
+    else if (!strcmp(key, "SIGRTMIN+6"))
+        feedback[SIGRTMIN+6] = value;
+    else if (!strcmp(key, "SIGRTMIN+7"))
+        feedback[SIGRTMIN+7] = value;
+    else if (!strcmp(key, "SIGRTMIN+8"))
+        feedback[SIGRTMIN+8] = value;
+    else if (!strcmp(key, "SIGRTMIN+9"))
+        feedback[SIGRTMIN+9] = value;
+    else if (!strcmp(key, "SIGRTMIN+10"))
+        feedback[SIGRTMIN+10] = value;
+    else if (!strcmp(key, "SIGRTMIN+11"))
+        feedback[SIGRTMIN+11] = value;
+    else if (!strcmp(key, "SIGRTMIN+12"))
+        feedback[SIGRTMIN+12] = value;
+    else if (!strcmp(key, "SIGRTMIN+13"))
+        feedback[SIGRTMIN+13] = value;
+    else if (!strcmp(key, "SIGRTMIN+14"))
+        feedback[SIGRTMIN+14] = value;
+    else if (!strcmp(key, "SIGRTMIN+15"))
+        feedback[SIGRTMIN+15] = value;
+    else if (!strcmp(key, "SIGRTMAX-14"))
+        feedback[SIGRTMAX-14] = value;
+    else if (!strcmp(key, "SIGRTMAX-13"))
+        feedback[SIGRTMAX-13] = value;
+    else if (!strcmp(key, "SIGRTMAX-12"))
+        feedback[SIGRTMAX-12] = value;
+    else if (!strcmp(key, "SIGRTMAX-11"))
+        feedback[SIGRTMAX-11] = value;
+    else if (!strcmp(key, "SIGRTMAX-10"))
+        feedback[SIGRTMAX-10] = value;
+    else if (!strcmp(key, "SIGRTMAX-9"))
+        feedback[SIGRTMAX-9] = value;
+    else if (!strcmp(key, "SIGRTMAX-8"))
+        feedback[SIGRTMAX-8] = value;
+    else if (!strcmp(key, "SIGRTMAX-7"))
+        feedback[SIGRTMAX-7] = value;
+    else if (!strcmp(key, "SIGRTMAX-6"))
+        feedback[SIGRTMAX-6] = value;
+    else if (!strcmp(key, "SIGRTMAX-5"))
+        feedback[SIGRTMAX-5] = value;
+    else if (!strcmp(key, "SIGRTMAX-4"))
+        feedback[SIGRTMAX-4] = value;
+    else if (!strcmp(key, "SIGRTMAX-3"))
+        feedback[SIGRTMAX-3] = value;
+    else if (!strcmp(key, "SIGRTMAX-2"))
+        feedback[SIGRTMAX-2] = value;
+    else if (!strcmp(key, "SIGRTMAX-1"))
+        feedback[SIGRTMAX-1] = value;
+    else if (!strcmp(key, "SIGRTMAX"))
+        feedback[SIGRTMAX] = value;
 }
 
 void

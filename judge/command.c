@@ -20,18 +20,26 @@ extern GSList * resource_rule;
 extern GSList * environ_rule;
 extern int signal_rule[];
 extern gboolean syscall_rule[];
+extern char * feedback[];
 extern Result * result;
 
+/* 子进程在执行exec调用之前的内存和时间，用于最后的资源统计 */
 static int pre_time;
 static int pre_memory;
+
 static jmp_buf jbuf;
 
-static int get_vmsize(int child);
-static void alarm_func(int signo);
-static void trace_child(int child);
-static void setup_child();
-static void setup_io();
-static void setup_resource();
+static int get_vmsize(int child);       /* /proc/pid/statm 虚拟内存值 */
+static void alarm_func(int signo);      /* alarm 信号处理函数 */
+static void trace_child(int child);     /* 子进程信号和系统调用捕捉 */
+static void setup_child();              /* 子进程在exec前的设置 */
+static void setup_io();                 /* 子进程io重定向 */
+static void setup_resource();           /* 子进程资源特定设置 */
+
+/* 启动子进程，安装时钟信号，获取子进程在exec之前的时间内存 */
+void execute_command();
+
+/* 子进程资源和环境变量设置，从配置文件指定 */
 static void foreach_resource(gpointer data, gpointer user_data);
 static void foreach_environ(gpointer data, gpointer user_data);
 
@@ -49,6 +57,19 @@ execute_command()
        setup_child();
 
     wait3(&status, 0, &used);
+    if (WIFEXITED(status)) {
+        switch (WEXITSTATUS(status)) {
+            case 1 : g_string_assign(result->err, "execvpe error");
+                     break;
+            case 2 : g_string_assign(result->err, "open input file error");
+                     break;
+            case 3 : g_string_assign(result->err, "open output file error");
+                     break;
+        }
+        result->code = EXIT_IE;
+        return;
+    }
+
     if (!WIFSTOPPED(status)) {
         kill(child, SIGKILL);
         result->code = EXIT_IE;
@@ -67,17 +88,19 @@ execute_command()
         return;
         
     }
+
+    /* memory的值不应该包含程序空载时指 */
     if (get_vmsize(child) > memory + preused) {
         kill(child, SIGKILL);
         result->code = EXIT_MLE;
         return;
     }
+
     pre_time = used.ru_utime.tv_sec * 1000 + 
         used.ru_utime.tv_usec / 1000 +
         used.ru_stime.tv_sec * 1000 +
         used.ru_stime.tv_usec / 1000;
     pre_memory = used.ru_minflt * getpagesize() / 1024;
-
 
     if (setjmp(jbuf)) {
         result->code = EXIT_TLE;
@@ -85,6 +108,7 @@ execute_command()
     }
     signal(SIGALRM, alarm_func);
 
+    /* 挂种时间等于RLIMIT_CPU的最大值，比最小值大1秒 */
     if (ltime % 1000)
         alarm(ltime / 1000 + 3);
     else
@@ -103,7 +127,7 @@ trace_child(int child)
     int lst_time;
     int lst_memory;
     int signo;
-    int endflag = 1;
+    int endflag = 1;    /* endflag == 0 为进入系统调用 */
     struct rusage used;
     struct user_regs_struct regs;
 
@@ -117,15 +141,16 @@ trace_child(int child)
                 used.ru_stime.tv_usec / 1000;
             lst_memory = used.ru_minflt * getpagesize() / 1024;
             result->code = EXIT_AC;
-            result->time = lst_time - pre_time - preused;
-            result->memory = lst_memory - pre_memory - preused;
+            result->time = lst_time - pre_time;
+
+            /* pre_memory 不使用，换页数在exec后会自动清0 */
+            result->memory = lst_memory - preused;
             return;
         }
 
         if (WIFSIGNALED(status)) {
             result->code = EXIT_RE;
-            g_string_printf(result->err, "user program killed by signal %d",
-                    WTERMSIG(status));
+            g_string_assign(result->err, feedback[WTERMSIG(status)]);
             return;
         }
 
@@ -149,12 +174,14 @@ trace_child(int child)
             
             kill(child, SIGKILL);
             result->code = EXIT_IE;
-            g_string_assign(result->msg, "runtime error msg");
+            g_string_assign(result->msg, feedback[signo]);
             return;
         }
 
         ptrace(PTRACE_GETREGS, child, NULL, &regs);
         endflag ^= 1;
+        
+        /* endflag == 0 进入系统调用前 */
         if (endflag == 0 && syscall_rule[regs.orig_eax]) {
             ptrace(PTRACE_SYSCALL, child, NULL, NULL);
             continue;
@@ -166,6 +193,7 @@ trace_child(int child)
             return;
         }
 
+        /* endflag == 1 系统调用之后 */
         if (get_vmsize(child) > memory + preused) {
             kill(child, SIGKILL);
             result->code = EXIT_MLE;
@@ -189,11 +217,9 @@ setup_child()
     g_slist_foreach(environ_rule, foreach_environ, &env);
     setup_resource();
 
-    if (ptrace(PTRACE_TRACEME, 0, NULL, NULL))
-        exit(1);
-
+    ptrace(PTRACE_TRACEME, 0, NULL, NULL);
     execvpe(command[0], command, (char * const *)env);
-    exit(2);
+    exit(1);
 }
 
 static void
@@ -202,7 +228,12 @@ setup_io()
     int infd, outfd;
 
     infd = open(input->str, O_RDONLY);
+    if (infd == -1)
+        exit(2);
+
     outfd = open(output->str, O_WRONLY | O_CREAT, FMODE);
+    if (outfd == -1)
+        exit(3);
 
     dup2(infd, STDIN_FILENO);
     dup2(outfd, STDOUT_FILENO);

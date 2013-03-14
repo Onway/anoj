@@ -20,22 +20,39 @@ extern GString * input;
 extern GString * answer;
 extern GString * output;
 extern Result * result;
+extern char * feedback[];
 
+/* 获取下一组输入，答案，输出文件路径，不存在返回FALSE */
+gboolean next_data();
+/* 解析数据目录，为next_data准备数据 */
+gboolean parse_data();
+/* 解析配置文件 */
+gboolean parse_keyfile();
+/* 解析命令行选项参数 */
+gboolean parse_cmdline(int *argc, char ***argv);
+
+static void set_output();       /* 设置输出文件名 */
+static gboolean check_data();   /* 检查数据目录的文件名 */
+
+/* 配置文件的组解析 */
 static gboolean parse_option(GKeyFile * kfile);
 static gboolean parse_preused(GKeyFile * kfile);
 static gboolean parse_signal(GKeyFile * kfile);
 static gboolean parse_syscall(GKeyFile * kfile);
 static gboolean parse_resource(GKeyFile * kfile);
 static gboolean parse_environ(GKeyFile * kfile);
-static gboolean check_data();
-static gint cmp_func(gconstpointer a, gconstpointer b);
-static void set_output();
+static gboolean parse_feedback(GKeyFile * kfile);
 
-static char * first_file = "judge.ini";
-static char * second_file = "/etc/wyuoj/judge.ini";
-static GPtrArray * gpar;
-static int gpar_index;
-static GRand * grand;
+/* 排序比较函数 */
+static gint cmp_func(gconstpointer a, gconstpointer b);
+
+static GRand * grand;       /* 随机数发生器 */
+static GPtrArray * gpar;    /* 指针数组，被next_data使用 */
+static int gpar_index;      /* 指针数组的当前位置 */
+
+/* 以下数据被parse_cmdline使用 */
+static char * first_file = "judger.ini";
+static char * second_file = "/etc/wyuoj/judger.ini";
 static char * parmstr = "[--] <command>";
 static char * summary =
 "  <command> is mandatory non-option argument whice to be judged.\n"
@@ -78,6 +95,7 @@ parse_cmdline(int *argc, char ***argv)
         return FALSE;
     }
 
+    /* 解析完选项后，剩下一个参数或者两个的错误情况 */
     if ((*argc) == 1 || ((*argc) == 2 && strcmp((*argv)[1], "--") == 0)) {
         g_string_assign(result->err, "<command> not found");
         return FALSE;
@@ -92,37 +110,45 @@ parse_cmdline(int *argc, char ***argv)
 gboolean
 parse_keyfile()
 {
-    gboolean suc = FALSE;
     GError * gerr = NULL;
     GKeyFile * kfile = NULL;
 
     kfile = g_key_file_new();
     g_assert(kfile);
     
-    if (cfgfile)
-        suc = g_key_file_load_from_file(kfile, cfgfile,
-                G_KEY_FILE_NONE, &gerr);
-    if (!suc) {
-        gerr ? g_error_free(gerr) : 1;
-        gerr = NULL;
-        suc = g_key_file_load_from_file(kfile, first_file,
-                G_KEY_FILE_NONE, &gerr);
-    }
-    if (!suc) {
-        gerr ? g_error_free(gerr) : 1;
-        gerr = NULL;
-        suc = g_key_file_load_from_file(kfile, second_file,
-                G_KEY_FILE_NONE, &gerr);
-    }
-    if (!suc) {
-        g_string_assign(result->err, gerr->message);
-        g_error_free(gerr);
-        return suc;
+    /* 如果命令行参数指定配置文件，任何错误都会退出 */
+    if (cfgfile) {
+        g_key_file_load_from_file(kfile, cfgfile, G_KEY_FILE_NONE, &gerr);
+        if (gerr) {
+            g_string_assign(result->err, gerr->message);
+            g_error_free(gerr);
+            return FALSE;
+        }
+        goto endtrue;
     }
 
+    /* 当前目录配置文件，文件不存在之外的错误都会退出 */
+    g_key_file_load_from_file(kfile, first_file, G_KEY_FILE_NONE, &gerr);
+    if (!gerr) goto endtrue;
+    if (gerr && gerr->code != G_KEY_FILE_ERROR_NOT_FOUND) {
+        g_string_assign(result->err, gerr->message);
+        g_error_free(gerr);
+        return FALSE;
+    }
+
+    /* 上一个文件不存在 */
+    g_error_free(gerr), gerr = NULL;
+    g_key_file_load_from_file(kfile, second_file, G_KEY_FILE_NONE, &gerr);
+    if (gerr) {
+        g_string_assign(result->err, gerr->message);
+        g_error_free(gerr);
+        return FALSE;
+    }
+
+endtrue:
     return parse_option(kfile) && parse_preused(kfile) &&
         parse_signal(kfile) && parse_syscall(kfile) &&
-        parse_resource(kfile) && parse_environ(kfile);
+        parse_resource(kfile) && parse_environ(kfile) && parse_feedback(kfile);
 }
 
 static gboolean
@@ -132,31 +158,31 @@ parse_option(GKeyFile * kfile)
     
     !ltime && (
             ltime = g_key_file_get_integer(kfile, "OPTION", "TIME", &gerr));
-    if (gerr) goto ERROR;
+    if (gerr) goto enderror;
 
     !memory && (
             memory = g_key_file_get_integer(kfile, "OPTION", "MEMORY", &gerr));
-    if (gerr) goto ERROR;
+    if (gerr) goto enderror;
 
     !fsize && (
             fsize = g_key_file_get_integer(kfile, "OPTION", "FSIZE", &gerr)); 
-    if (gerr) goto ERROR;
+    if (gerr) goto enderror;
 
     !lang && (
             lang = g_key_file_get_string(kfile, "OPTION", "LANG", &gerr));
-    if (gerr) goto ERROR;
+    if (gerr) goto enderror;
 
     !workdir && (
             workdir = g_key_file_get_string(kfile, "OPTION", "WORKDIR", &gerr));
-    if (gerr) goto ERROR;
+    if (gerr) goto enderror;
 
     !datadir && (
             datadir = g_key_file_get_string(kfile, "OPTION", "DATADIR", &gerr));
-    if (gerr) goto ERROR;
+    if (gerr) goto enderror;
 
     return TRUE;
 
-ERROR:
+enderror:
     g_string_assign(result->err, gerr->message);
     g_error_free(gerr);
     return FALSE;
@@ -192,8 +218,7 @@ parse_signal(GKeyFile * kfile)
         g_error_free(gerr);
         return FALSE;
     }
-    if (!length) return TRUE;
-    g_assert(keys);
+    if (!length) return TRUE;   /* 如果没有任何信号 */
 
     for (key = keys; *key != NULL; ++key) {
         value = g_key_file_get_integer(kfile, group, *key, &gerr);
@@ -205,6 +230,7 @@ parse_signal(GKeyFile * kfile)
         auto_signal_rule(*key, value);
     }
 
+    g_strfreev(keys);
     return TRUE;
 }
 
@@ -225,7 +251,6 @@ parse_syscall(GKeyFile * kfile)
         return FALSE;
     }
     if (!length) return TRUE;
-    g_assert(keys);
 
     for (key = keys; *key != NULL; ++key) {
         value = g_key_file_get_boolean(kfile, group, *key, &gerr);
@@ -237,6 +262,7 @@ parse_syscall(GKeyFile * kfile)
         auto_syscall_rule(*key, value);
     }
 
+    g_strfreev(keys);
     return TRUE;
 }
 
@@ -259,7 +285,6 @@ parse_resource(GKeyFile * kfile)
         return FALSE;
     }
     if (!length) return TRUE;
-    g_assert(keys);
 
     for (key = keys; *key != NULL; ++key) {
         value = g_key_file_get_string_list(kfile, group, *key, &length, &gerr);
@@ -269,7 +294,7 @@ parse_resource(GKeyFile * kfile)
             return FALSE;
         }
         if (length != 2) {
-            g_string_printf(result->err, "Invalid key-value %s", *key);
+            g_string_printf(result->err, "invalid key-value %s", *key);
             return FALSE;
         }
 
@@ -281,6 +306,7 @@ parse_resource(GKeyFile * kfile)
         auto_resource_rule(*key, lcur, lmax);
     }
 
+    g_strfreev(keys);
     return TRUE;
 }
 
@@ -301,18 +327,56 @@ parse_environ(GKeyFile * kfile)
         return FALSE;
     }
     if (!length) return TRUE;
-    g_assert(keys);
 
     for (key = keys; *key != NULL; ++key) {
         value = g_key_file_get_string(kfile, group, *key, &gerr);
         if (gerr) {
             g_string_assign(result->err, gerr->message);
+            g_error_free(gerr);
             return FALSE;
         }
 
         auto_environ_rule(*key, value);
     }
 
+    return TRUE;
+}
+
+static gboolean
+parse_feedback(GKeyFile * kfile)
+{
+    GError * gerr = NULL;
+    gsize length;
+    int i;
+    char * group = "FEEDBACK";
+    char ** keys = NULL;
+    char ** key;
+    char * value;
+
+    keys = g_key_file_get_keys(kfile, group, &length, &gerr);
+    if (gerr) {
+        g_string_assign(result->err, gerr->message);
+        g_error_free(gerr);
+        return FALSE;
+    }
+    if (!length) return TRUE;
+
+    for (key = keys; *key != NULL; ++key) {
+        value = g_key_file_get_string(kfile, group, *key, &gerr);
+        if (gerr) {
+            g_string_assign(result->err, gerr->message);
+            g_error_free(gerr);
+            return FALSE;
+        }
+
+        auto_feedback(*key, value);
+    }
+
+    for (i = 0; i < SIGNAL_NUM; ++i)
+        if (feedback[i] == NULL)
+            feedback[i] = g_strdup("");
+
+    g_strfreev(keys);
     return TRUE;
 }
 
@@ -325,6 +389,7 @@ parse_data()
     
     grand = g_rand_new();
     gpar = g_ptr_array_new();
+    g_assert(grand && gpar);
 
     gdir = g_dir_open(datadir, 0, &gerr);
     if (gerr) {
@@ -339,7 +404,7 @@ parse_data()
     if (gpar->len && (gpar->len % 2) == 0 && check_data())
         return TRUE;
 
-    g_string_assign(result->err, "Parse data directory error");
+    g_string_assign(result->err, "parse data directory error");
     return FALSE;
 }
 

@@ -20,14 +20,22 @@ extern int syscall_rule[];
 
 static jmp_buf jbuf;
 
-static void alarm_func(int signo);
-static void trace_child(int child);
-static void setup_child();
-static void setup_io();
-static void setup_resource();
+static void alarm_func(int signo);      /* alarm 信号处理函数 */ 
+static void trace_child(int child);     /* 子进程信号和系统调用捕捉 */
+static void setup_child();              /* 子进程exec之前的设置 */
+static void setup_io();                 /* 子进程io重定向 */
+static void setup_resource();           /* 子进程资源特定设置 */
+
+/* 子进程资源和环境变量设置 */
 static void foreach_resource(gpointer data, gpointer user_data);
 static void foreach_environ(gpointer data, gpointer user_data);
+
+/* 字符串对比，用于判断ac, wa, pe */
 static Status compare_string(char * outstr, char * ansstr);
+
+/* 程序答案评测，启动子进程，安装闹钟 */
+void special_judge();
+void normal_judge();    /* 文本答案评测 */
 
 void
 normal_judge()
@@ -37,6 +45,7 @@ normal_judge()
 
     g_file_get_contents(output->str, &outstr, NULL, &gerr);
     if (gerr) {
+        result->code = EXIT_IE;
         g_string_assign(result->err, gerr->message);
         g_error_free(gerr);
         return;
@@ -44,6 +53,7 @@ normal_judge()
 
     g_file_get_contents(answer->str, &ansstr, NULL, &gerr);
     if (gerr) {
+        result->code = EXIT_IE;
         g_string_assign(result->err, gerr->message);
         g_error_free(gerr);
         return;
@@ -60,6 +70,7 @@ special_judge()
     pid_t child;
     GSList * ele;
 
+    /* 如果配置文件没有指定RLIMIT_CPU，则回退到被测程序的时间限制 */
     ele = resource_rule;
     while ((ele = g_slist_next(ele)) != NULL)
         if (((Resource *)ele)->resource == RLIMIT_CPU) {
@@ -75,7 +86,7 @@ special_judge()
     if (setjmp(jbuf)) {
         kill(child, SIGKILL);
         result->code = EXIT_IE;
-        g_string_sprintf(result->err, "spj time limited");
+        g_string_sprintf(result->err, "spj time limit exceeded");
         return;
     }
 
@@ -188,14 +199,12 @@ trace_child(int child)
                 }
                 continue;
             }
-            if (regs.orig_eax >= 0 && regs.orig_eax < SYSCALL_NUM) {
-                if (!syscall_rule[regs.orig_eax]) {
-                    kill(child, SIGKILL);
-                    result->code = EXIT_IE;
-                    g_string_printf(result->err,
-                            "spj used invalid syscall %ld", regs.orig_eax);
-                    return;
-                }
+            if (!syscall_rule[regs.orig_eax]) {
+                kill(child, SIGKILL);
+                result->code = EXIT_IE;
+                g_string_printf(result->err,
+                        "spj used invalid syscall %ld", regs.orig_eax);
+                return;
             }
             ptrace(PTRACE_SYSCALL, child, NULL, NULL);
         } else {
@@ -221,11 +230,15 @@ setup_child()
     g_slist_foreach(environ_rule, foreach_environ, &env);
     setup_resource();
 
-    if (ptrace(PTRACE_TRACEME, 0, NULL, NULL))
-        exit(1);
-
+    ptrace(PTRACE_TRACEME, 0, NULL, NULL);
     execle(answer->str, answer->str, (char *)NULL, (char * const *)env);
-    exit(2);
+
+    /*
+     * 监控进程没有检测该进程在exec之前的退出值，
+     * 而退出值也只是用于调试
+     * 发个信号自行终止就可以了
+     */
+    raise(SIGUSR1);
 }
 
 static void
@@ -234,6 +247,7 @@ setup_io()
     int infd;
 
     infd = open(output->str, O_RDONLY);
+    infd == -1 && raise(SIGUSR2);
     dup2(infd, STDIN_FILENO);
 
     close(infd);
@@ -251,6 +265,7 @@ setup_resource()
 
     getrlimit(RLIMIT_CPU, &t);
     if (t.rlim_cur == RLIM_INFINITY || t.rlim_max == RLIM_INFINITY) {
+        /* 比监控进程的挂种时间少1秒 */
         t.rlim_cur = t.rlim_max = ltime / 1000 + 2;
         setrlimit(RLIMIT_CPU, &t);
     }
