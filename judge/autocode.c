@@ -18,7 +18,7 @@ extern int signal_rule[];
 extern int syscall_rule[];
 extern GSList * resource_rule;
 extern GSList * environ_rule;
-extern char * feedback[];
+extern const char * feedback[];
 
 void
 auto_signal_rule(const char * key, int value)

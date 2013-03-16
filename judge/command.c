@@ -89,7 +89,7 @@ execute_command()
         
     }
 
-    /* memory的值不应该包含程序空载时指 */
+    /* memory的值不应该包含程序空载时的值 */
     if (get_vmsize(child) > memory + preused) {
         kill(child, SIGKILL);
         result->code = EXIT_MLE;
@@ -142,9 +142,7 @@ trace_child(int child)
             lst_memory = used.ru_minflt * getpagesize() / 1024;
             result->code = EXIT_AC;
             result->time = lst_time - pre_time;
-
-            /* pre_memory 不使用，换页数在exec后会自动清0 */
-            result->memory = lst_memory - preused;
+            result->memory = lst_memory - preused - pre_memory;
             return;
         }
 

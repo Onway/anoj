@@ -27,7 +27,7 @@ int signal_rule[SIGNAL_NUM];
 gboolean syscall_rule[SYSCALL_NUM];
 GSList * resource_rule;
 GSList * environ_rule;
-char * feedback[SIGNAL_NUM];
+const char * feedback[SIGNAL_NUM];
 
 Result * result;            /* 评测结果 */
 

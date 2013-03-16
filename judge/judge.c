@@ -107,6 +107,9 @@ compare_string(char * outstr, char * ansstr)
     len1 = strlen(outstr);
     len2 = strlen(ansstr);
 
+    if (len1 == len2 && len1 == 0)
+        return EXIT_AC;
+
 	/* 去掉字符串尾部的不可打印字符 */
 	for (i = len1 - 1; i >= 0; --i)
 		if (!is_nonprint(outstr[i]))

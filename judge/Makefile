@@ -19,4 +19,4 @@ autocode.o: autocode.c global.h
 	gcc -c autocode.c $(GLIB)
 
 clean:
-	rm -f *.o *.out
+	rm -f *.o *.out judger
