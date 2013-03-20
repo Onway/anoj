@@ -40,7 +40,7 @@ void normal_judge();    /* 文本答案评测 */
 void
 normal_judge()
 {
-    char * outstr, * ansstr;
+    char * outstr = NULL, * ansstr = NULL;
     GError * gerr = NULL;
 
     g_file_get_contents(output->str, &outstr, NULL, &gerr);
@@ -77,7 +77,7 @@ special_judge()
             wtime = ((Resource *)ele)->lmt.rlim_cur;
             break;
         }
-    if (wtime == 0) wtime = ltime / 1000 + 3;
+    if (wtime == 0) wtime = ltime / 1000 + 2;
 
     child = fork();
     if (child == 0)
@@ -105,6 +105,8 @@ compare_string(char * outstr, char * ansstr)
     int len1, len2;
 
     len1 = strlen(outstr);
+    printf("%s", outstr);
+    printf("============================\n");
     len2 = strlen(ansstr);
 
     if (len1 == len2 && len1 == 0)
@@ -192,7 +194,7 @@ trace_child(int child)
                 if (signal_rule[signo] == SIG_NOTHING)
                     ptrace(PTRACE_CONT, child, NULL, NULL);
                 else if (signal_rule[signo] == SIG_DELIVER)
-                    ptrace(PTRACE_CONT, child, NULL, &signo);
+                    ptrace(PTRACE_CONT, child, NULL, signo);
                 else {
                     kill(child, SIGKILL);
                     result->code = EXIT_IE;

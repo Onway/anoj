@@ -11,6 +11,7 @@ extern int ltime;
 extern int fsize;
 extern int memory;
 extern int preused;
+extern char * lang;
 extern char * workdir;
 extern char * const * command;
 extern GString * input;
@@ -49,8 +50,50 @@ execute_command()
     int status;
     pid_t child;
     struct rusage used;
+    int vmsize;
     int signo;
     struct user_regs_struct regs;
+
+    /* for java */
+    int len = 0;
+    char xmn[100];
+    char ** tmp;
+    char * const * ix;
+
+    /* for java */
+    if (!strcmp(lang, "JAVA")) {
+        for (ix = command; *ix != NULL; ++ix)
+            ++len;
+        tmp = (char **)malloc((len + 3) * sizeof(char *));
+
+        tmp[0] = (char *)malloc(strlen(command[0]) + 1);
+        strcpy(tmp[0], command[0]);
+
+        sprintf(xmn, "-Xms%dk", memory);
+        tmp[1] = (char *)malloc(strlen(xmn) + 1);
+        strcpy(tmp[1], xmn);
+
+        sprintf(xmn, "-Xmx%dk", memory);
+        tmp[2] = (char *)malloc(strlen(xmn) + 1);
+        strcpy(tmp[2], xmn);
+
+        for (len = 3, ix = command + 1; *ix != NULL; ++ix, ++len) {
+            tmp[len] = (char *)malloc(strlen(*ix) + 1);
+            strcpy(tmp[len], *ix);
+        }
+        tmp[len] = NULL;
+
+        command = (char * const *)tmp;
+        memory = 1024 * 1024;    /* 1G */
+
+        /*
+        for (ix = command; *ix != NULL; ++ix)
+            printf("%s ", *ix);
+        printf("\n");
+        result->code = EXIT_PE;
+        return;
+        */
+    }
 
     child = fork();
     if (child == 0)
@@ -64,6 +107,10 @@ execute_command()
             case 2 : g_string_assign(result->err, "open input file error");
                      break;
             case 3 : g_string_assign(result->err, "open output file error");
+                     break;
+            case 4 : g_string_assign(result->err, "dup2 input error");
+                     break;
+            case 5 : g_string_assign(result->err, "dup2 ouput error");
                      break;
         }
         result->code = EXIT_IE;
@@ -90,9 +137,10 @@ execute_command()
     }
 
     /* memory的值不应该包含程序空载时的值 */
-    if (get_vmsize(child) > memory + preused) {
+    if ((vmsize = get_vmsize(child)) > memory + preused) {
         kill(child, SIGKILL);
         result->code = EXIT_MLE;
+        result->memory = vmsize;
         return;
     }
 
@@ -108,11 +156,10 @@ execute_command()
     }
     signal(SIGALRM, alarm_func);
 
-    /* 挂种时间等于RLIMIT_CPU的最大值，比最小值大1秒 */
     if (ltime % 1000)
-        alarm(ltime / 1000 + 3);
-    else
         alarm(ltime / 1000 + 2);
+    else
+        alarm(ltime / 1000 + 1);
     ptrace(PTRACE_SYSCALL, child, NULL, NULL);
     trace_child(child);
     alarm(0);
@@ -126,6 +173,7 @@ trace_child(int child)
     int status;
     int lst_time;
     int lst_memory;
+    int vmsize;
     int signo;
     int endflag = 1;    /* endflag == 0 为进入系统调用 */
     struct rusage used;
@@ -166,12 +214,12 @@ trace_child(int child)
                 continue;
             }
             else if (signal_rule[signo] == SIG_DELIVER) {
-                ptrace(PTRACE_CONT, child, NULL, &signo);
+                ptrace(PTRACE_CONT, child, NULL, signo);
                 continue;
             }
             
             kill(child, SIGKILL);
-            result->code = EXIT_IE;
+            result->code = EXIT_RE;
             g_string_assign(result->msg, feedback[signo]);
             return;
         }
@@ -192,9 +240,10 @@ trace_child(int child)
         }
 
         /* endflag == 1 系统调用之后 */
-        if (get_vmsize(child) > memory + preused) {
+        if ((vmsize = get_vmsize(child)) > memory + preused) {
             kill(child, SIGKILL);
             result->code = EXIT_MLE;
+            result->memory = vmsize;
             return;
         }
 
@@ -206,7 +255,6 @@ static void
 setup_child()
 {
     char ** env;
-
     env = g_get_environ();
 
     chdir(workdir);
@@ -235,10 +283,10 @@ setup_io()
 
     dup2(infd, STDIN_FILENO);
     dup2(outfd, STDOUT_FILENO);
+    dup2(outfd, STDERR_FILENO);
     
     close(infd);
     close(outfd);
-    close(STDERR_FILENO);
 }
 
 static void 
@@ -247,10 +295,10 @@ setup_resource()
     struct rlimit t;
 
     if (ltime % 1000 == 0)
-        t.rlim_cur = ltime / 1000 + 1;
+        t.rlim_cur = ltime / 1000;
     else
-        t.rlim_cur = ltime / 1000 + 2;
-    t.rlim_max = t.rlim_cur + 1;
+        t.rlim_cur = ltime / 1000 + 1;
+    t.rlim_max = t.rlim_cur;
     setrlimit(RLIMIT_CPU, &t);
 
     t.rlim_cur = t.rlim_max = fsize * 1024;
@@ -290,6 +338,18 @@ foreach_resource(gpointer data, gpointer user_data)
     Resource * ptr;
     
     ptr = (Resource *)data;
+    
+    /* these resource will be set later */
+    if (ptr->resource == RLIMIT_CPU || ptr->resource == RLIMIT_AS ||
+            ptr->resource == RLIMIT_FSIZE)
+        return;
+    
+    /* for java */
+    if (ptr->resource == RLIMIT_NPROC && !strcmp(lang, "JAVA"))
+        ptr->lmt.rlim_cur = ptr->lmt.rlim_max = 250;
+    if (ptr->resource == RLIMIT_NOFILE && !strcmp(lang, "JAVA"))
+        ptr->lmt.rlim_cur = ptr->lmt.rlim_max = 20;
+
     setrlimit(ptr->resource, &ptr->lmt);
 }
 
