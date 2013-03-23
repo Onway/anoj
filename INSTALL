@@ -8,3 +8,4 @@ sudo apt-get install openjdk-7-jdk
 sudo apt-get install python2.7
 sudo apt-get install g++-4.6
 sudo apt-get install gcc-4.6
+sudo apt-get install pyflakes

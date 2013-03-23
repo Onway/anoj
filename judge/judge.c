@@ -105,8 +105,10 @@ compare_string(char * outstr, char * ansstr)
     int len1, len2;
 
     len1 = strlen(outstr);
+    /*
     printf("%s", outstr);
     printf("============================\n");
+    */
     len2 = strlen(ansstr);
 
     if (len1 == len2 && len1 == 0)

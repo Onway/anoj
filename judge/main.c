@@ -86,7 +86,7 @@ init_varible()
 static void
 exit_func()
 {
-    printf("Result: ");
+    printf("result:");
     switch(result->code) {
         case EXIT_AC : printf("Accetped\n");
                        break;
@@ -106,10 +106,10 @@ exit_func()
                         break;
     }
 
-    printf("Time: %d\n", result->time);
-    printf("Memory: %d\n", result->memory);
-    printf("Message: %s\n", result->msg->str);
-    printf("Error: %s\n", result->err->str);
+    printf("time:%d\n", result->time);
+    printf("memory:%d\n", result->memory);
+    printf("msg:%s\n", result->msg->str);
+    printf("debug:%s\n", result->err->str);
 
     exit(0);
 }   
