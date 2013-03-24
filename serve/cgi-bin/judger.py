@@ -24,8 +24,8 @@ LANG = None
 CODE = None
 REMOTE = ""
 
-ALLOW =  ["127.0.0.1", ]
-URL = "http://127.0.0.1:8888/cgi-bin/result.py"
+ALLOW =  ["192.168.1.104", "127.0.0.1" ]
+URL = "http://192.168.1.104:8888/cgi-bin/result.py"
 WORKDIR = os.path.join(os.environ["HOME"], ".wyuoj/tmp")
 DATADIR = os.path.join(os.environ["HOME"], ".wyuoj/data")
 
@@ -37,6 +37,7 @@ def randstr(n = 16):
 
 def send_result(**kdict):
     kdict["rid"] = RID
+    kdict["pid"] = PID
 
     if not kdict.has_key("time"):
         kdict["time"] = 0
@@ -58,27 +59,32 @@ def do_compile():
     tmpstr = randstr()
 
     os.chdir(WORKDIR)
-    if LANG == "c":
+    if LANG == "C":
         srcfile = tmpstr + ".c"
         binfile = tmpstr
-        cmd = "gcc -o %s %s --static" % (srcfile, binfile)
-    elif LANG == "c++":
+        cmd = "gcc -o %s %s --static" % (binfile, srcfile)
+    elif LANG == "C++":
         srcfile = tmpstr + ".cpp"
         binfile = tmpstr
-        cmd = "g++ -o %s %s --static" % (srcfile, binfile)
-    elif LANG == "java":
+        cmd = "g++ -o %s %s --static" % (binfile, srcfile)
+    elif LANG == "JAVA":
         javadir = tmpstr
         srcfile = "Main.java"
         binfile = "Main"
         os.mkdir(javadir)
+        os.chdir(javadir)
         cmd = "javac %s" % srcfile
-    elif LANG == "python":
+    elif LANG == "PYTHON":
         srcfile = tmpstr + ".py"
         os.chmod(srcfile, 0755)
         cmd = "pyflakes %s" % srcfile
     else:
         send_result(**{"debug": "unsupported language"})
         exit(1)
+
+    f = open(srcfile, "w")
+    f.write(CODE)
+    f.close()
 
     status, output = commands.getstatusoutput(cmd)
     if status != 0:
@@ -88,12 +94,12 @@ def do_compile():
     return tmpstr
 
 def do_judge(tmpstr):
-    cmd = "judger "
+    cmd = "/home/onway/wyuoj/judge/judger "
     workdir = ""
 
-    if TIME != 0: cmd += "-t %s " % TIME
-    if MEMORY != 0: cmd += "-m %s " % MEMORY
-    if OUTSIZE != 0: cmd += "-f %s " % OUTSIZE
+    if TIME != "": cmd += "-t %s " % TIME
+    if MEMORY != "": cmd += "-m %s " % MEMORY
+    if OUTSIZE != "": cmd += "-f %s " % OUTSIZE
     if LANG != "": cmd += "-l %s " % LANG
     
     cmd += "-w %s " % WORKDIR
@@ -102,11 +108,11 @@ def do_judge(tmpstr):
     cmd += "-- "
 
     workdir = WORKDIR 
-    if LANG == "c" or LANG == "c++":
+    if LANG == "C" or LANG == "C++":
         cmd += "./%s" % tmpstr
-    elif LANG == "python":
+    elif LANG == "PYTHON":
         cmd += "./%s.py" % tmpstr
-    elif LANG == "java":
+    elif LANG == "JAVA":
         workdir = os.path.join(workdir, tmpstr)
         cmd += "java -cp %s Main" % os.path.join(workdir)
     
@@ -126,6 +132,9 @@ def do_judge(tmpstr):
     os.system("rm -rf %s*" % tmpstr)
 
 if __name__ == "__main__":
+    print "Content-Type: text/html"
+    print ""
+
     form = cgi.FieldStorage()
     RID = form.getvalue("rid", "")
     PID = form.getvalue("pid", "")

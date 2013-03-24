@@ -13,5 +13,5 @@ public class Main
             b = cin.nextInt();
             System.out.println(a + b);          
         }
-        }
+    }
 }

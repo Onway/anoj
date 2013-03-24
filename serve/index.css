@@ -1,0 +1,99 @@
+* {
+    margin: 0;
+    padding: 0;
+    font-family: "Times New Roman", Georgia, Serif;
+    font-size: 16px;
+}
+
+div#wrapper {
+    width: 90%;
+    margin: 5px auto;
+    height: 630px;
+}
+
+div#left {
+    position: relative;
+    height: 100%;
+    width: 60%;
+    float: left;
+    padding: 5px;
+    background-color: #d0d0d0;
+}
+
+div#right {
+    position: relative;
+    width: 35%;
+    float: right;
+    height: 100%;
+    padding: 5px;
+    background-color: #d0d0d0;
+}
+
+#left table {
+    position: relative;
+    width: 100%;
+    margin: 3px auto;
+    line-height: 30px;
+}
+
+#left table .tip {
+    width: 10%;
+    text-align: center;
+}
+
+#left textarea {
+    resize: None;
+    width: 90%;
+    height: 380px;
+}
+
+#right button {
+    display: block;
+    margin: 5px auto;
+}
+
+#right table {
+    position: relative;
+    width: 80%;
+    margin: 3px auto;
+    line-height: 25px;
+    text-align: center;
+}
+
+#right table .tip {
+    width: 50%;
+}
+
+#right #txt {
+    text-align: center;
+}
+
+#right #txt textarea {
+    resize: None;
+    width: 90%;
+}
+
+#right #msg {
+    margin-bottom: 10px;
+    height: 200px;
+}
+
+#right #debug {
+    height: 100px;
+}
+
+button {
+    width: 80px;
+    font-size: 16px;
+    height: 30px;
+    font-weight: bold;
+}
+
+#inc_rid, #inc_pid, #dec_pid {
+    width: 30px;
+    height: 20px;
+}
+
+#submit {
+    margin-top: 8px;
+}

@@ -12,7 +12,8 @@ import SocketServer
 import BaseHTTPServer
 import CGIHTTPServer
 
-HOST = "127.0.0.1"
+#HOST = "127.0.0.1"
+HOST = "192.168.1.104"
 PORT = 8888
 SERVER = None
 LOGGER = None
@@ -43,7 +44,7 @@ def _switch_daemon():
         exit(0)
     os.setsid()
     os.umask(0)
-    os.chdir(WORKDIR)
+    #os.chdir(WORKDIR)
 
     pid = os.fork()
     if pid != 0:

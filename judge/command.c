@@ -346,7 +346,7 @@ foreach_resource(gpointer data, gpointer user_data)
     
     /* for java */
     if (ptr->resource == RLIMIT_NPROC && !strcmp(lang, "JAVA"))
-        ptr->lmt.rlim_cur = ptr->lmt.rlim_max = 250;
+        ptr->lmt.rlim_cur = ptr->lmt.rlim_max = 350;
     if (ptr->resource == RLIMIT_NOFILE && !strcmp(lang, "JAVA"))
         ptr->lmt.rlim_cur = ptr->lmt.rlim_max = 20;
 
