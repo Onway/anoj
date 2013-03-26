@@ -217,9 +217,12 @@ trace_child(int child)
                 ptrace(PTRACE_CONT, child, NULL, signo);
                 continue;
             }
-            
+
             kill(child, SIGKILL);
-            result->code = EXIT_RE;
+            if (signo == SIGXFSZ) {
+                result->code = EXIT_OLE;
+            } else
+                result->code = EXIT_RE;
             g_string_assign(result->msg, feedback[signo]);
             return;
         }

@@ -7,3 +7,4 @@ judger:
 6，利用打开文件的剩余量(RLIMIT_NOFILE)分次写入多个文件，可通过定时删除解决
 7，利用java开启子进程，子进程执行fork炸弹。
 8，bash -c 'echo ":(){:|:&};:" > fork; bash fork'
+9，修正java的系统调用

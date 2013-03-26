@@ -4,12 +4,16 @@
 # Author        : Yiu Yi <aluohuai@126.com>
 # Create Date   : 2013-03-23
 
+# This script should not be used for browser,
+# it recieved the POST data and sent nothing.
+# For practical use, rewrite URL variable and add comment to save_result() call.
 import os
 
 import cgi
 import cgitb
 cgitb.enable()
 
+import json
 import urllib
 import urllib2
 import random
@@ -25,7 +29,8 @@ CODE = None
 REMOTE = ""
 
 ALLOW =  ["192.168.1.104", "127.0.0.1" ]
-URL = "http://192.168.1.104:8888/cgi-bin/result.py"
+#URL = "http://192.168.1.104:8888/cgi-bin/result.py"
+URL = "http://127.0.0.1:8888/cgi-bin/result.py"
 WORKDIR = os.path.join(os.environ["HOME"], ".wyuoj/tmp")
 DATADIR = os.path.join(os.environ["HOME"], ".wyuoj/data")
 
@@ -42,15 +47,15 @@ def send_result(**kdict):
     if not kdict.has_key("time"):
         kdict["time"] = 0
     if not kdict.has_key("m"):
-        kdict["momory"] = 0
+        kdict["memory"] = 0
     if not kdict.has_key("codelen"):
         kdict["codelen"] = len(CODE)
     if not kdict.has_key("result"):
         kdict["result"] = "result"
     if not kdict.has_key("msg"):
-        kdict["msg"] = "msg"
+        kdict["msg"] = ""
     if not kdict.has_key("debug"):
-        kdict["debug"] = "debug"
+        kdict["debug"] = ""
     urllib2.urlopen(urllib2.Request(URL, urllib.urlencode(kdict)))
 
 def do_compile():
@@ -131,6 +136,23 @@ def do_judge(tmpstr):
     os.chdir(WORKDIR)
     os.system("rm -rf %s*" % tmpstr)
 
+def save_history():
+    submit = os.path.join(os.environ["HOME"], ".wyuoj/history/submit")
+    submit = os.path.join(submit, RID)
+
+    kdict = {}
+    kdict["rid"] = RID
+    kdict["pid"] = PID
+    kdict["time"] = TIME
+    kdict["memory"] = MEMORY
+    kdict["outsize"] = OUTSIZE
+    kdict["lang"] = LANG
+    kdict["code"] = CODE
+
+    f = open(submit, "w");
+    f.write(json.dumps(kdict))
+    f.close()
+
 if __name__ == "__main__":
     print "Content-Type: text/html"
     print ""
@@ -154,4 +176,5 @@ if __name__ == "__main__":
     if pid != 0:
         exit(0)
 
+    save_history()
     do_judge(do_compile())

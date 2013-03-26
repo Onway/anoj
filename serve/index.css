@@ -89,7 +89,7 @@ button {
     font-weight: bold;
 }
 
-#inc_rid, #inc_pid, #dec_pid {
+#inc_rid, #dec_rid, #new_rid, #inc_pid, #dec_pid {
     width: 30px;
     height: 20px;
 }
