@@ -46,7 +46,7 @@ def send_result(**kdict):
 
     if not kdict.has_key("time"):
         kdict["time"] = 0
-    if not kdict.has_key("m"):
+    if not kdict.has_key("memory"):
         kdict["memory"] = 0
     if not kdict.has_key("codelen"):
         kdict["codelen"] = len(CODE)
@@ -81,13 +81,13 @@ def do_compile():
         cmd = "javac %s" % srcfile
     elif LANG == "PYTHON":
         srcfile = tmpstr + ".py"
-        os.chmod(srcfile, 0755)
         cmd = "pyflakes %s" % srcfile
+        cmd = "ls"
     else:
         send_result(**{"debug": "unsupported language"})
         exit(1)
 
-    f = open(srcfile, "w")
+    f = open(srcfile, "w", 0644)
     f.write(CODE)
     f.close()
 
@@ -116,7 +116,7 @@ def do_judge(tmpstr):
     if LANG == "C" or LANG == "C++":
         cmd += "./%s" % tmpstr
     elif LANG == "PYTHON":
-        cmd += "./%s.py" % tmpstr
+        cmd += "python -S %s.py" % tmpstr
     elif LANG == "JAVA":
         workdir = os.path.join(workdir, tmpstr)
         cmd += "java -cp %s Main" % os.path.join(workdir)

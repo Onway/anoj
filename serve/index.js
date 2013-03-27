@@ -24,7 +24,7 @@ $(document).ready(function() {
                 $("#debug").val(ret["debug"]);
                 $("#result").html(ret["result"]);
                 $("#time").html(ret["time"]);
-                $("#memory").html(ret["momory"]);
+                $("#memory").html(ret["memory"]);
                 $("#msg").val(ret["msg"]);
                 //$("#new_rid").click();
             }
@@ -70,7 +70,7 @@ $(document).ready(function() {
 
     $("#inc_rid").click(function() {
         var cur = Number($("[name=rid]").val());
-        $("[name=rid]").val(cur - 1);
+        $("[name=rid]").val(cur + 1);
         $("#right button").click();
 
         url = "cgi-bin/result.py?action=q&rid=" + (cur + 1);

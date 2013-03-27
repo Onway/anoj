@@ -85,14 +85,6 @@ execute_command()
 
         command = (char * const *)tmp;
         memory = 1024 * 1024;    /* 1G */
-
-        /*
-        for (ix = command; *ix != NULL; ++ix)
-            printf("%s ", *ix);
-        printf("\n");
-        result->code = EXIT_PE;
-        return;
-        */
     }
 
     child = fork();
@@ -151,6 +143,7 @@ execute_command()
     pre_memory = used.ru_minflt * getpagesize() / 1024;
 
     if (setjmp(jbuf)) {
+        kill(child, SIGKILL);
         result->code = EXIT_TLE;
         return;
     }
@@ -188,15 +181,25 @@ trace_child(int child)
                 used.ru_stime.tv_sec * 1000 +
                 used.ru_stime.tv_usec / 1000;
             lst_memory = used.ru_minflt * getpagesize() / 1024;
-            result->code = EXIT_AC;
             result->time = lst_time - pre_time;
             result->memory = lst_memory - preused - pre_memory;
+            if (result->time > ltime) {
+                result->code = EXIT_TLE;
+                return;
+            }
+            if (result->memory > memory) {
+                result->code = EXIT_MLE;
+                return;
+            }
+            result->code = EXIT_AC;
             return;
         }
 
         if (WIFSIGNALED(status)) {
             result->code = EXIT_RE;
             g_string_assign(result->err, feedback[WTERMSIG(status)]);
+            g_string_printf(result->err,
+                    "killed by signal %d", WTERMSIG(status));
             return;
         }
 
@@ -221,9 +224,12 @@ trace_child(int child)
             kill(child, SIGKILL);
             if (signo == SIGXFSZ) {
                 result->code = EXIT_OLE;
-            } else
+            } else if (signo == SIGXCPU) {
+                result->code = EXIT_TLE;   
+            } else {
                 result->code = EXIT_RE;
-            g_string_assign(result->msg, feedback[signo]);
+                g_string_assign(result->msg, feedback[signo]);
+            }
             return;
         }
 
@@ -301,7 +307,7 @@ setup_resource()
         t.rlim_cur = ltime / 1000;
     else
         t.rlim_cur = ltime / 1000 + 1;
-    t.rlim_max = t.rlim_cur;
+    t.rlim_max = t.rlim_cur + 1;
     setrlimit(RLIMIT_CPU, &t);
 
     t.rlim_cur = t.rlim_max = fsize * 1024;

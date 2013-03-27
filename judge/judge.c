@@ -105,13 +105,17 @@ compare_string(char * outstr, char * ansstr)
     int len1, len2;
 
     len1 = strlen(outstr);
+
+    FILE * tmpfd = fopen("/tmp/result.txt", "w");
+    fprintf(tmpfd, "%s", outstr);
+    fclose(tmpfd);
     /*
     printf("%s", outstr);
     printf("============================\n");
     */
     len2 = strlen(ansstr);
 
-    if (len1 == len2 && len1 == 0)
+    if (len2 == 0)
         return EXIT_AC;
 
 	/* 去掉字符串尾部的不可打印字符 */
