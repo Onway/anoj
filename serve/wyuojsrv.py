@@ -12,8 +12,8 @@ import SocketServer
 import BaseHTTPServer
 import CGIHTTPServer
 
-HOST = "127.0.0.1"
-#HOST = "192.168.1.104"
+#HOST = "127.0.0.1"
+HOST = "192.168.1.102"
 PORT = 8888
 SERVER = None
 LOGGER = None

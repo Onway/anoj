@@ -28,9 +28,9 @@ LANG = None
 CODE = None
 REMOTE = ""
 
-ALLOW =  ["192.168.1.104", "127.0.0.1" ]
-#URL = "http://192.168.1.104:8888/cgi-bin/result.py"
-URL = "http://127.0.0.1:8888/cgi-bin/result.py"
+ALLOW =  ["192.168.1.104", "127.0.0.1", "192.168.1.102"]
+URL = "http://192.168.1.102:8888/cgi-bin/result.py"
+#URL = "http://127.0.0.1:8888/cgi-bin/result.py"
 WORKDIR = os.path.join(os.environ["HOME"], ".wyuoj/tmp")
 DATADIR = os.path.join(os.environ["HOME"], ".wyuoj/data")
 
