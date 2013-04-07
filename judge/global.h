@@ -13,6 +13,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <setjmp.h>
+#include <pwd.h>
 #include <sys/time.h>
 #include <sys/user.h>
 #include <sys/wait.h>
@@ -33,6 +34,7 @@
 #define SYSCALL_NUM 400
 #define RESOURCE_NUM 20
 #define FMODE (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
+#define SPJTIME 5
 #define is_nonprint(c) ((c) == '\n' || (c) == '\t' || (c) == ' ')
 
 /* 结果代码，前三个位置不可调换 */

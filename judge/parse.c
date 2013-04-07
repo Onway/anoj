@@ -10,7 +10,6 @@
 extern int ltime;
 extern int memory;
 extern int fsize;
-extern int preused;
 extern char * lang;
 extern char * cfgfile;
 extern char * workdir;
@@ -35,8 +34,6 @@ static void set_output();       /* 设置输出文件名 */
 static gboolean check_data();   /* 检查数据目录的文件名 */
 
 /* 配置文件的组解析 */
-static gboolean parse_option(GKeyFile * kfile);
-static gboolean parse_preused(GKeyFile * kfile);
 static gboolean parse_signal(GKeyFile * kfile);
 static gboolean parse_syscall(GKeyFile * kfile);
 static gboolean parse_resource(GKeyFile * kfile);
@@ -104,6 +101,12 @@ parse_cmdline(int *argc, char ***argv)
     else
         command = &(*argv)[1];
 
+    !ltime && (ltime = 1000);
+    !memory && (memory = 32768);
+    !fsize && (fsize = 1024); 
+    !lang && (lang = g_strdup("C"));
+    !workdir && (workdir = g_strdup("/tmp"));
+    !datadir && (datadir = g_strdup("/tmp/data"));
     return TRUE;
 }
 
@@ -146,60 +149,8 @@ parse_keyfile()
     }
 
 endtrue:
-    return parse_option(kfile) && parse_preused(kfile) &&
-        parse_signal(kfile) && parse_syscall(kfile) &&
+    return parse_signal(kfile) && parse_syscall(kfile) &&
         parse_resource(kfile) && parse_environ(kfile) && parse_feedback(kfile);
-}
-
-static gboolean
-parse_option(GKeyFile * kfile)
-{
-    GError * gerr = NULL;
-    
-    !ltime && (
-            ltime = g_key_file_get_integer(kfile, "OPTION", "TIME", &gerr));
-    if (gerr) goto enderror;
-
-    !memory && (
-            memory = g_key_file_get_integer(kfile, "OPTION", "MEMORY", &gerr));
-    if (gerr) goto enderror;
-
-    !fsize && (
-            fsize = g_key_file_get_integer(kfile, "OPTION", "FSIZE", &gerr)); 
-    if (gerr) goto enderror;
-
-    !lang && (
-            lang = g_key_file_get_string(kfile, "OPTION", "LANG", &gerr));
-    if (gerr) goto enderror;
-
-    !workdir && (
-            workdir = g_key_file_get_string(kfile, "OPTION", "WORKDIR", &gerr));
-    if (gerr) goto enderror;
-
-    !datadir && (
-            datadir = g_key_file_get_string(kfile, "OPTION", "DATADIR", &gerr));
-    if (gerr) goto enderror;
-
-    return TRUE;
-
-enderror:
-    g_string_assign(result->err, gerr->message);
-    g_error_free(gerr);
-    return FALSE;
-}
-
-static gboolean
-parse_preused(GKeyFile * kfile)
-{
-    GError * gerr = NULL;
-
-    preused = g_key_file_get_integer(kfile, "PARSER", lang, &gerr);
-    if (gerr) {
-        g_string_assign(result->err, gerr->message);
-        g_error_free(gerr);
-    }
-
-    return !gerr;
 }
 
 static gboolean
@@ -374,7 +325,7 @@ parse_feedback(GKeyFile * kfile)
 
     for (i = 0; i < SIGNAL_NUM; ++i)
         if (feedback[i] == NULL)
-            feedback[i] = g_strdup("");
+            feedback[i] = g_strdup("Invalid Signal");
 
     g_strfreev(keys);
     return TRUE;

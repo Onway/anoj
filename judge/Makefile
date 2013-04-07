@@ -20,3 +20,12 @@ autocode.o: autocode.c global.h
 
 clean:
 	rm -f *.o *.out judger
+
+install:
+	cp -f judger /usr/bin/
+	chown root:root /usr/bin/judger
+	chmod 4755 /usr/bin/judger
+
+uninstall:
+	rm -f /usr/bin/judger
+

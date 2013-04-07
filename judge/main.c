@@ -10,7 +10,6 @@
 int ltime;                  /* 时间限制 */
 int fsize;                  /* 输出限制 */
 int memory;                 /* 内存限制 */
-int preused;                /* 解析器内存 */
 
 GString * input;            /* 输入文件 */
 GString * output;           /* 输出文件 */
@@ -30,6 +29,7 @@ GSList * environ_rule;
 const char * feedback[SIGNAL_NUM];
 
 Result * result;            /* 评测结果 */
+struct passwd * pwd;
 
 static void init_varible(); /* 全局变量初始化 */
 static void exit_func();    /* 本程序唯一出口 */
@@ -81,6 +81,9 @@ init_varible()
     result->msg = g_string_new("");
     result->err = g_string_new("");
     g_assert(result->msg && result->err);
+
+    pwd = getpwnam("nobody");
+    g_assert(pwd);
 }
 
 static void
