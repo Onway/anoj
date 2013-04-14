@@ -1,7 +1,7 @@
 GLIB=`pkg-config --libs --cflags glib-2.0`
 
-judger: main.o parse.o command.o judge.o autocode.o global.h
-	gcc -o judger main.o parse.o command.o judge.o autocode.o $(GLIB)
+judger: main.o parse.o command.o jcommand.o judge.o autocode.o global.h
+	gcc -o judger main.o parse.o command.o jcommand.o judge.o autocode.o $(GLIB)
 
 main.o: main.c global.h
 	gcc -c main.c $(GLIB)
@@ -17,6 +17,9 @@ judge.o: judge.c global.h
 
 autocode.o: autocode.c global.h
 	gcc -c autocode.c $(GLIB)
+
+jcommand.o: jcommand.c global.h
+	gcc -c jcommand.c $(GLIB)
 
 clean:
 	rm -f *.o *.out judger

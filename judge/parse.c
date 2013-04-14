@@ -104,7 +104,7 @@ parse_cmdline(int *argc, char ***argv)
     !ltime && (ltime = 1000);
     !memory && (memory = 32768);
     !fsize && (fsize = 1024); 
-    !lang && (lang = g_strdup("C"));
+    !lang && (lang = g_strdup("c"));
     !workdir && (workdir = g_strdup("/tmp"));
     !datadir && (datadir = g_strdup("/tmp/data"));
     return TRUE;

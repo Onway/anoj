@@ -10,7 +10,6 @@
 extern int ltime;
 extern int fsize;
 extern int memory;
-extern char * lang;
 extern char * workdir;
 extern char * const * command;
 extern GString * input;
@@ -31,7 +30,7 @@ static int pre_memory;
 static jmp_buf jbuf;
 
 static void alarm_func(int signo);          /* alarm 信号处理函数 */
-static void trace_child(int child);         /* 子进程信号和系统调用捕捉 */
+static void trace_child(pid_t child);         /* 子进程信号和系统调用捕捉 */
 static void setup_child();                  /* 子进程在exec前的设置 */
 static void setup_io();                     /* 子进程io重定向 */
 static void setup_resource();               /* 子进程资源特定设置 */
@@ -128,7 +127,7 @@ execute_command()
 }
 
 static void
-trace_child(int child)
+trace_child(pid_t child)
 {
     int signo;
     int status;

@@ -43,12 +43,15 @@ main(int argc, char *argv[])
     init_varible();
     max_time = max_memory = 0;
 
-    if (!parse_cmdline(&argc, &argv) || !parse_keyfile() || !parse_data())
+    if (!parse_cmdline(&argc, &argv) || !parse_data())
+        exit_func();
+
+    if (strcmp("java", lang) && !parse_keyfile())
         exit_func();
 
     /* 多个输入用例，多次运行程序 */
     while (next_data()) {
-        execute_command();
+        strcmp("java", lang) ? execute_command() : execute_jcommand();
         result->code != EXIT_AC ? unlink(output->str), exit_func() : 1;
 
         stat(answer->str, &sbuf);
