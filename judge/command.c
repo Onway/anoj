@@ -109,14 +109,14 @@ execute_command()
     signal(SIGALRM, alarm_func);
     if (setjmp(jbuf)) {
         kill(child, SIGKILL);
-        result->time = ltime + 1;
+        result->time = ltime;
         result->code = EXIT_TLE;
         return;
     }
     if (ltime % 1000)
-        alarm(ltime / 1000 + 2);
+        alarm(ltime / 1000 + 3);
     else
-        alarm(ltime / 1000 + 1);
+        alarm(ltime / 1000 + 2);
 
     /* 继续并跟踪子进程 */
     ptrace(PTRACE_SYSCALL, child, NULL, NULL);
@@ -186,6 +186,7 @@ trace_child(int child)
             if (signo == SIGXFSZ) {
                 result->code = EXIT_OLE;
             } else if (signo == SIGXCPU) {
+                result->time = ltime;
                 result->code = EXIT_TLE;   
             } else {
                 result->code = EXIT_RE;
