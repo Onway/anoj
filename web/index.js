@@ -1,15 +1,18 @@
 $(document).ready(function() {
     $("#submit").click(function() {
         $(this).attr("disabled", true);
-        $(this).html("waiting");
+        $(this).html("Waiting");
         data = $("#left form").serialize();
         $.ajax({
             type: "post",
             url: "cgi-bin/judger.py",
             data: data,
             success: function(ret) {
-                $("#submit").removeAttr("disabled");
-                $("#submit").html("Submit");
+                setTimeout(function() {
+                    $("#submit").removeAttr("disabled");
+                    $("#submit").html("Submit");
+                    $("#right button").click();
+                }, 2000);
             }
         })
         return false;

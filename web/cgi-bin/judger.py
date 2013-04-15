@@ -121,7 +121,7 @@ def do_judge(tmpstr):
     elif LANG == "python":
         cmd += "python -S %s.py" % tmpstr
     elif LANG == "java":
-        cmd += "java -Xms%dk -Xmx%dk -Djava.security.policy=%s Main" % (
+        cmd += "java -Xms%dk -Xmx%dk -Djava.security.manager -Djava.security.policy=%s Main" % (
                 int(MEMORY), int(MEMORY) * 2,
                 os.path.join("/etc/wyuoj/java.policy"))
     
