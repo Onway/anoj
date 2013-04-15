@@ -101,23 +101,19 @@ def do_compile():
     return tmpstr
 
 def do_judge(tmpstr):
-    # 共有选项
     cmd = "judger -t %s -f %s -l %s -d %s " % (TIME, OUTSIZE, LANG,
             os.path.join(DATADIR, PID))
 
-    # 执行命令的工作目录
     if LANG != "java":
         workdir = WORKDIR
     else:
         workdir = os.path.join(WORKDIR, tmpstr)
     cmd += "-w %s " % workdir
 
-    # 非java选项
     if LANG != "java":
         cmd += "-m %s " % MEMORY
-        cmd += "-c %s " % os.path.join(os.environ["HOME"], ".wyuoj/judger.ini")
+        cmd += "-c %s " % os.path.join("/etc/wyuoj/judger.ini")
     
-    # 选项结束
     cmd += "-- "
 
     if LANG == "c" or LANG == "c++":
@@ -127,7 +123,7 @@ def do_judge(tmpstr):
     elif LANG == "java":
         cmd += "java -Xms%dk -Xmx%dk -Djava.security.policy=%s Main" % (
                 int(MEMORY), int(MEMORY) * 2,
-                os.path.join(os.environ["HOME"], ".wyuoj/java.policy"))
+                os.path.join("/etc/wyuoj/java.policy"))
     
     status, output = commands.getstatusoutput(cmd)
     if status == 0:
@@ -181,7 +177,7 @@ if __name__ == "__main__":
     TO = cf.get("DEFAULT", "TO")
     WORKDIR = cf.get("DEFAULT", "WORKDIR")
     DATADIR = cf.get("DEFAULT", "DATADIR")
-    
+
     if "REMOTE_ADDR" in os.environ:
         REMOTE = os.environ["REMOTE_ADDR"]
 

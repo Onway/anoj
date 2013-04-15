@@ -28,7 +28,7 @@ install:
 	cp -f judger /usr/bin/
 	chown root:root /usr/bin/judger
 	chmod 4755 /usr/bin/judger
-	mkdir /etc/wyuoj
+	mkdir -p /etc/wyuoj
 	cp -f judger.ini java.policy /etc/wyuoj
 
 uninstall:
