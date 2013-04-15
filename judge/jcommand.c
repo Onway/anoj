@@ -24,7 +24,7 @@ static int pre_memory;
 static jmp_buf jbuf;
 
 static void alarm_func(int signo);
-static void wait_child(pid_t child);
+static void trace_child(pid_t child);
 static void filter_output();
 static void setup_child();
 static void setup_io();
@@ -108,8 +108,8 @@ execute_jcommand()
         alarm(ltime / 1000 + 2);
 
     /* 继续并等待子进程 */
-    ptrace(PTRACE_DETACH, child, NULL, NULL);
-    wait_child(child);
+    ptrace(PTRACE_SYSCALL, child, NULL, NULL);
+    trace_child(child);
     /* 非超时返回 */
     alarm(0);
 
@@ -119,37 +119,56 @@ execute_jcommand()
 }
 
 static void
-wait_child(pid_t child)
+trace_child(pid_t child)
 {
     int status;
+    int signo;
     struct rusage used;
 
-    wait3(&status, 0, &used);
+    while (1) {
+        wait3(&status, 0, &used);
 
-    result->time = get_time(&used);
-    result->memory = get_memory(&used);
+        result->time = get_time(&used);
+        result->memory = get_memory(&used);
 
-    /* 子进程退出 */
-    if (WIFEXITED(status)) {
-        if (result->time > ltime)
+        /* 子进程退出 */
+        if (WIFEXITED(status)) {
+            if (result->time > ltime)
+                result->code = EXIT_TLE;
+            else
+                result->code = EXIT_AC;
+            return;
+        }
+
+        /* 子进程被信号终止 */
+        if (WIFSIGNALED(status)) {
+            result->code = EXIT_RE;
+            g_string_printf(result->err, "Invalid Signal %d", WTERMSIG(status));
+            return;
+        }
+
+        /* 除了结束外，期待的是停止状态，如果不是 */
+        if (!WIFSTOPPED(status)) {
+            kill(child, SIGKILL);
+            result->code = EXIT_IE;
+            g_string_assign(result->err, "unknow user program status");
+            return;
+        }
+
+        signo = WSTOPSIG(status); 
+        if (signo == SIGXCPU)
             result->code = EXIT_TLE;
-        else
-            result->code = EXIT_AC;
-        return;
-    }
+        else if (signo == SIGXFSZ)
+            result->code = EXIT_OLE;
+        else {
+            ptrace(PTRACE_SYSCALL, child, 0, 0);
+            continue;
+        }
 
-    /* 子进程被信号终止 */
-    if (WIFSIGNALED(status)) {
-        result->code = EXIT_RE;
-        g_string_printf(result->err, "Invalid Signal %d", WTERMSIG(status));
+        kill(child, SIGKILL);
         return;
-    }
-
-    /* 未知子进程状态 */
-    kill(child, SIGKILL);
-    result->code = EXIT_IE;
-    g_string_printf(result->err, "Unkonw child process status");
-}
+    } // end while
+} // end function
 
 static void
 setup_child()

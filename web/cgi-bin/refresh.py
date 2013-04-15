@@ -8,6 +8,8 @@ import os
 import cgi
 import commands
 
+HISTORY = "/home/wyuojer/history"
+
 if __name__ == "__main__":
     print "Content-Type: application/json"
     print ""
@@ -17,12 +19,12 @@ if __name__ == "__main__":
 
     # get the last runid
     if rid == "":
-        os.chdir(os.path.join(os.environ["HOME"], ".wyuoj/history/result"))
+        os.chdir(os.path.join(HISTORY, "result"))
         print commands.getoutput("ls -1 | wc -l")
 
     # get result by runid
     else:
-        result = os.path.join(os.environ["HOME"], ".wyuoj/history/result")
+        result = os.path.join(HISTORY, "result")
         result = os.path.join(result, rid)
         f = open(result, "r")
         print f.readline()

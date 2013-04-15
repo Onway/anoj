@@ -11,6 +11,8 @@ import cgitb
 cgitb.enable()
 
 
+HISTORY = "/home/wyuojer/history"
+
 if __name__ == "__main__":
     form = cgi.FieldStorage()
     
@@ -20,7 +22,7 @@ if __name__ == "__main__":
         print "Content-Type: application/json"
         print ""
         rid = form.getvalue("rid", "")
-        result = os.path.join(os.environ["HOME"], ".wyuoj/history/submit")
+        result = os.path.join(HISTORY, "submit")
         result = os.path.join(result, rid)
         f = open(result, "r")
         print f.readline()
@@ -41,7 +43,9 @@ if __name__ == "__main__":
     kdict["msg"] = form.getvalue("msg", "")
     kdict["debug"] = form.getvalue("debug", "")
 
-    result = os.path.join(os.environ["HOME"], ".wyuoj/history/result")
+    result = os.path.join(HISTORY, "result")
+    if not os.path.exists(result):
+        os.system("mkdir -p %s" % result)
     result = os.path.join(result, kdict["rid"])
     f = open(result, "w")
     f.write(json.dumps(kdict))

@@ -22,13 +22,17 @@ jcommand.o: jcommand.c global.h
 	gcc -c jcommand.c $(GLIB)
 
 clean:
-	rm -f *.o *.out judger
+	rm -f *.o judger
 
 install:
 	cp -f judger /usr/bin/
 	chown root:root /usr/bin/judger
 	chmod 4755 /usr/bin/judger
+	mkdir /etc/wyuoj
+	cp -f judger.ini java.policy /etc/wyuoj
 
 uninstall:
 	rm -f /usr/bin/judger
+	rm /etc/wyuoj/judger.ini /etc/wyuoj/java.policy
+	rmdir --ignore-fail-on-non-empty /etc/wyuoj
 
