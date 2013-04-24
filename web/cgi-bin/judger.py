@@ -120,7 +120,6 @@ def do_judge(tmpstr):
 
     if LANG != "java":
         cmd += "-m %s " % MEMORY
-        cmd += "-c %s " % os.path.join("/etc/wyuoj/judger.ini")
     
     cmd += "-- "
 

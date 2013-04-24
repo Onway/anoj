@@ -11,7 +11,6 @@ extern int ltime;
 extern int memory;
 extern int fsize;
 extern char * lang;
-extern char * cfgfile;
 extern char * workdir;
 extern char * datadir;
 extern char * const * command;
@@ -19,26 +18,16 @@ extern GString * input;
 extern GString * answer;
 extern GString * output;
 extern Result * result;
-extern char * feedback[];
 
 /* 获取下一组输入，答案，输出文件路径，不存在返回FALSE */
 gboolean next_data();
 /* 解析数据目录，为next_data准备数据 */
 gboolean parse_data();
-/* 解析配置文件 */
-gboolean parse_keyfile();
 /* 解析命令行选项参数 */
 gboolean parse_cmdline(int *argc, char ***argv);
 
 static void set_output();       /* 设置输出文件名 */
 static gboolean check_data();   /* 检查数据目录的文件名 */
-
-/* 配置文件的组解析 */
-static gboolean parse_signal(GKeyFile * kfile);
-static gboolean parse_syscall(GKeyFile * kfile);
-static gboolean parse_resource(GKeyFile * kfile);
-static gboolean parse_environ(GKeyFile * kfile);
-static gboolean parse_feedback(GKeyFile * kfile);
 
 /* 排序比较函数 */
 static gint cmp_func(gconstpointer a, gconstpointer b);
@@ -48,8 +37,6 @@ static GPtrArray * gpar;    /* 指针数组，被next_data使用 */
 static int gpar_index;      /* 指针数组的当前位置 */
 
 /* 以下数据被parse_cmdline使用 */
-static char * first_file = "judger.ini";
-static char * second_file = "/etc/wyuoj/judger.ini";
 static char * parmstr = "[--] <command>";
 static char * summary =
 "  <command> is mandatory non-option argument whice to be judged.\n"
@@ -65,9 +52,6 @@ static GOptionEntry entries[] =
     {"lang", 'l', 0, G_OPTION_ARG_STRING, &lang,
         "User program language",
         "Language"},
-    {"conf", 'c', 0, G_OPTION_ARG_STRING, &cfgfile,
-        "Specify a configuration file.No effect for java",
-        "Filepath"},
     {"workdir", 'w', 0, G_OPTION_ARG_STRING, &workdir,
         "User program working directory",
         "Directory"},
@@ -107,227 +91,6 @@ parse_cmdline(int *argc, char ***argv)
     !lang && (lang = g_strdup("c"));
     !workdir && (workdir = g_strdup("/tmp"));
     !datadir && (datadir = g_strdup("/tmp/data"));
-    return TRUE;
-}
-
-gboolean
-parse_keyfile()
-{
-    GError * gerr = NULL;
-    GKeyFile * kfile = NULL;
-
-    kfile = g_key_file_new();
-    g_assert(kfile);
-    
-    /* 如果命令行参数指定配置文件，任何错误都会退出 */
-    if (cfgfile) {
-        g_key_file_load_from_file(kfile, cfgfile, G_KEY_FILE_NONE, &gerr);
-        if (gerr) {
-            g_string_assign(result->err, gerr->message);
-            g_error_free(gerr);
-            return FALSE;
-        }
-        goto endtrue;
-    }
-
-    /* 当前目录配置文件，文件不存在之外的错误都会退出 */
-    g_key_file_load_from_file(kfile, first_file, G_KEY_FILE_NONE, &gerr);
-    if (!gerr) goto endtrue;
-    if (gerr && gerr->code != G_KEY_FILE_ERROR_NOT_FOUND) {
-        g_string_assign(result->err, gerr->message);
-        g_error_free(gerr);
-        return FALSE;
-    }
-
-    /* 上一个文件不存在 */
-    g_error_free(gerr), gerr = NULL;
-    g_key_file_load_from_file(kfile, second_file, G_KEY_FILE_NONE, &gerr);
-    if (gerr) {
-        g_string_assign(result->err, gerr->message);
-        g_error_free(gerr);
-        return FALSE;
-    }
-
-endtrue:
-    return parse_signal(kfile) && parse_syscall(kfile) &&
-        parse_resource(kfile) && parse_environ(kfile) && parse_feedback(kfile);
-}
-
-static gboolean
-parse_signal(GKeyFile * kfile)
-{
-    GError * gerr = NULL;
-    gsize  length;
-    char * group = "SIGNAL";
-    char ** keys = NULL;
-    char ** key;
-    int value;
-
-    keys = g_key_file_get_keys(kfile, group, &length, &gerr);
-    if (gerr) {
-        g_string_assign(result->err, gerr->message);
-        g_error_free(gerr);
-        return FALSE;
-    }
-    if (!length) return TRUE;   /* 如果没有任何信号 */
-
-    for (key = keys; *key != NULL; ++key) {
-        value = g_key_file_get_integer(kfile, group, *key, &gerr);
-        if (gerr) {
-            g_string_assign(result->err, gerr->message);
-            g_error_free(gerr);
-            return FALSE;
-        }
-        auto_signal_rule(*key, value);
-    }
-
-    g_strfreev(keys);
-    return TRUE;
-}
-
-static gboolean
-parse_syscall(GKeyFile * kfile)
-{
-    GError * gerr = NULL;
-    gsize length;
-    char * group = "SYSCALL";
-    char ** keys = NULL;
-    char ** key;
-    gboolean value;
-
-    keys = g_key_file_get_keys(kfile, group, &length, &gerr);
-    if (gerr) {
-        g_string_assign(result->err, gerr->message);
-        g_error_free(gerr);
-        return FALSE;
-    }
-    if (!length) return TRUE;
-
-    for (key = keys; *key != NULL; ++key) {
-        value = g_key_file_get_boolean(kfile, group, *key, &gerr);
-        if (gerr) {
-            g_string_assign(result->err, gerr->message);
-            g_error_free(gerr);
-            return FALSE;
-        }
-        auto_syscall_rule(*key, value);
-    }
-
-    g_strfreev(keys);
-    return TRUE;
-}
-
-static gboolean
-parse_resource(GKeyFile * kfile)
-{
-    GError * gerr = NULL;
-    gsize length;
-    char * group = "RESOURCE";
-    char ** keys = NULL;
-    char ** key;
-    char ** value;
-    int i;
-    rlim_t lcur, lmax;
-
-    keys = g_key_file_get_keys(kfile, group, &length, &gerr);
-    if (gerr) {
-        g_string_assign(result->err, gerr->message);
-        g_error_free(gerr);
-        return FALSE;
-    }
-    if (!length) return TRUE;
-
-    for (key = keys; *key != NULL; ++key) {
-        value = g_key_file_get_string_list(kfile, group, *key, &length, &gerr);
-        if (gerr) {
-            g_string_assign(result->err, gerr->message);
-            g_error_free(gerr);
-            return FALSE;
-        }
-        if (length != 2) {
-            g_string_printf(result->err, "invalid key-value %s", *key);
-            return FALSE;
-        }
-
-        !strcmp(value[0], "RLIM_INFINITY") ?
-            (lcur = RLIM_INFINITY) : (lcur = atol(value[0]));
-        !strcmp(value[1], "RLIM_INFINITY") ?
-            (lmax = RLIM_INFINITY) : (lmax = atol(value[1]));
-
-        auto_resource_rule(*key, lcur, lmax);
-    }
-
-    g_strfreev(keys);
-    return TRUE;
-}
-
-static gboolean
-parse_environ(GKeyFile * kfile)
-{
-    GError * gerr = NULL;
-    gsize length;
-    char * group = "ENVIRON";
-    char ** keys = NULL;
-    char ** key;
-    char * value;
-
-    keys = g_key_file_get_keys(kfile, group, &length, &gerr);
-    if (gerr) {
-        g_string_assign(result->err, gerr->message);
-        g_error_free(gerr);
-        return FALSE;
-    }
-    if (!length) return TRUE;
-
-    for (key = keys; *key != NULL; ++key) {
-        value = g_key_file_get_string(kfile, group, *key, &gerr);
-        if (gerr) {
-            g_string_assign(result->err, gerr->message);
-            g_error_free(gerr);
-            return FALSE;
-        }
-
-        auto_environ_rule(*key, value);
-    }
-
-    return TRUE;
-}
-
-static gboolean
-parse_feedback(GKeyFile * kfile)
-{
-    GError * gerr = NULL;
-    gsize length;
-    int i;
-    char * group = "FEEDBACK";
-    char ** keys = NULL;
-    char ** key;
-    char * value;
-
-    keys = g_key_file_get_keys(kfile, group, &length, &gerr);
-    if (gerr) {
-        g_string_assign(result->err, gerr->message);
-        g_error_free(gerr);
-        return FALSE;
-    }
-    if (!length) return TRUE;
-
-    for (key = keys; *key != NULL; ++key) {
-        value = g_key_file_get_string(kfile, group, *key, &gerr);
-        if (gerr) {
-            g_string_assign(result->err, gerr->message);
-            g_error_free(gerr);
-            return FALSE;
-        }
-
-        auto_feedback(*key, value);
-    }
-
-    for (i = 0; i < SIGNAL_NUM; ++i)
-        if (feedback[i] == NULL)
-            feedback[i] = g_strdup("Invalid Signal");
-
-    g_strfreev(keys);
     return TRUE;
 }
 

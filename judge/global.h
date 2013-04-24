@@ -30,7 +30,7 @@
 #define G_DISABLE_ASSERT
  */
 
-#define SIGNAL_NUM 70
+#define SIGNAL_NUM 65
 #define SYSCALL_NUM 400
 #define RESOURCE_NUM 20
 #define FMODE (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
@@ -53,8 +53,8 @@ typedef enum
 /* 信号处理方式 */
 typedef enum
 {
-    SIG_NOTHING,
     SIG_DELIVER,
+    SIG_NOTHING,
     SIG_TERMINATE,
 }Sigaction;
 

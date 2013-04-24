@@ -15,7 +15,6 @@ GString * input;            /* 输入文件 */
 GString * output;           /* 输出文件 */
 GString * answer;           /* 答案文件 */
 
-char * cfgfile;             /* 配置文件 */
 char * workdir;             /* 工作目录 */
 char * datadir;             /* 数据目录 */
 char * lang;                /* 程序语言 */
@@ -46,8 +45,7 @@ main(int argc, char *argv[])
     if (!parse_cmdline(&argc, &argv) || !parse_data())
         exit_func();
 
-    if (strcmp("java", lang) && !parse_keyfile())
-        exit_func();
+    strcmp("java", lang) && init_conf();
 
     /* 多个输入用例，多次运行程序 */
     while (next_data()) {
