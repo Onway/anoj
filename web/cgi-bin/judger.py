@@ -17,6 +17,7 @@ import json
 import urllib
 import urllib2
 import random
+import signal
 import commands
 import ConfigParser
 
@@ -40,6 +41,10 @@ def randstr(n = 16):
     for i in range(n + 1):
         st = st + chr(97 + random.randint(0, 25))
     return st
+
+def sighandler(signo, frame):
+    send_result(**{"result":"Compile Error", "msg":"Compile too long time"})
+    exit(0)
 
 def send_result(**kdict):
     kdict["rid"] = RID
@@ -92,7 +97,10 @@ def do_compile():
     f.write(CODE)
     f.close()
 
+    signal.signal(signal.SIGALRM, sighandler)
+    signal.alarm(5)
     status, output = commands.getstatusoutput(cmd)
+    signal.alarm(0)
     if status != 0:
         send_result(**{"result": "Compile Error", "msg": output})
         os.chdir(WORKDIR)
