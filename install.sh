@@ -13,6 +13,7 @@ make install
 cd ..
 cp -f wyuoj.ini /etc/wyuoj
 cp -rf web /home/wyuojer
+cp -f devtools/solution.xml /home/wyuojer/web
 chown -R wyuojer:wyuojer /home/wyuojer/web
 
 if [ ! -d /home/wyuojer/data ] ; then

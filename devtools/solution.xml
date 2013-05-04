@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <solution>
+        <rid>1</rid>
+        <pid>1000</pid>
+        <desc>a + b</desc>
+        <time unit="ms">1000</time>
+        <memory unit="kb">32768</memory>
+        <outsize unit="kb">1024</outsize>
+        <lang>c</lang>
+        <expect>Accepted</expect>
+        <code>
+<![CDATA[
+#include <stdio.h>
+
+int main()
+{
+    int a, b;
+    scanf("%d%d", &a, &b);
+    printf("%d\n", a + b);
+    return 0;
+}
+]]>
+        </code>
+    </solution>
+
+    <solution>
+        <rid>2</rid>
+        <pid>1000</pid>
+        <desc>a + b</desc>
+        <time unit="ms">1000</time>
+        <memory unit="kb">32768</memory>
+        <outsize unit="kb">1024</outsize>
+        <lang>c++</lang>
+        <expect>Accepted</expect>
+        <code>
+<![CDATA[
+#include <iostream>
+
+int main()
+{
+    int a, b;
+    std::cin >> a >> b;
+    std::cout << a + b << std::endl;
+    return 0;
+}
+]]>
+        </code>
+    </solution>
+
+    <solution>
+        <rid>3</rid>
+        <pid>1000</pid>
+        <desc>a + b</desc>
+        <time unit="ms">1000</time>
+        <memory unit="kb">32768</memory>
+        <outsize unit="kb">1024</outsize>
+        <lang>java</lang>
+        <expect>Accepted</expect>
+        <code>
+<![CDATA[
+import java.io.*;
+import java.util.*;
+
+public class Main
+{
+    public static void main(String args[])
+    {
+        int a, b;
+        Scanner cin = new Scanner(System.in);
+
+        a = cin.nextInt();
+        b = cin.nextInt();
+        System.out.println(a + b);
+    }
+}
+]]>
+        </code>
+    </solution>
+
+    <solution>
+        <rid>4</rid>
+        <pid>1000</pid>
+        <desc>a + b</desc>
+        <time unit="ms">1000</time>
+        <memory unit="kb">32768</memory>
+        <outsize unit="kb">1024</outsize>
+        <lang>python</lang>
+        <expect>Accepted</expect>
+        <code>
+<![CDATA[
+a, b = map(int, raw_input().split())
+print a + b
+]]>
+        </code>
+    </solution>
+
+</root>
