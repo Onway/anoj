@@ -77,40 +77,38 @@ static void
 init_environ_rule()
 {
     Environ * tmp = NULL;
-    tmp = (Environ *)malloc(sizeof(Environ));
 
     /*
-    tmp->key = "ENV_KEY";
-    tmp->key = "ENV_VALUE";
+    tmp = (Environ *)malloc(sizeof(Environ));
+    tmp->key = g_strdup("ENV_KEY");
+    tmp->key = g_strdup("ENV_VALUE");
     environ_rule = g_slist_append(environ_rule, tmp);
     */
-
-    free(tmp);
 }
 
 static void
 init_resource_rule()
 {
     Resource * tmp = NULL;
-    tmp = (Resource *)malloc(sizeof(Resource));
 
 #ifdef RLIMIT_CORE
+    tmp = (Resource *)malloc(sizeof(Resource));
     tmp->resource = RLIMIT_CORE;
     tmp->lmt.rlim_cur = tmp->lmt.rlim_max = 0;
     resource_rule = g_slist_append(resource_rule, tmp);
 #endif
 #ifdef RLIMIT_NPROC
+    tmp = (Resource *)malloc(sizeof(Resource));
     tmp->resource = RLIMIT_NPROC;
     tmp->lmt.rlim_cur = tmp->lmt.rlim_max = 0;
     resource_rule = g_slist_append(resource_rule, tmp);
 #endif
 #ifdef RLIMIT_NOFILE
+    tmp = (Resource *)malloc(sizeof(Resource));
     tmp->resource = RLIMIT_NOFILE;
     tmp->lmt.rlim_cur = tmp->lmt.rlim_max = 30;
     resource_rule = g_slist_append(resource_rule, tmp);
 #endif
-
-    free(tmp);
 }
 
 static void

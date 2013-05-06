@@ -20,6 +20,8 @@ import random
 import signal
 import commands
 import ConfigParser
+import traceback
+import subprocess
 
 RID = None
 PID = None
@@ -36,6 +38,9 @@ WORKDIR = None
 DATADIR = None
 INIFILE = ["/home/wyuojer/wyuoj.ini", "/etc/wyuoj/wyuoj.ini"]
 
+class CompileTimeout(Exception):
+    pass
+
 def randstr(n = 16):
     st = ""
     for i in range(n + 1):
@@ -43,7 +48,11 @@ def randstr(n = 16):
     return st
 
 def sighandler(signo, frame):
-    send_result(**{"result":"Compile Error", "msg":"Compile too long time"})
+    raise CompileTimeout
+
+def clean_exit(tmpstr):
+    os.chdir(WORKDIR)
+    os.system("rm -rf %s*" % tmpstr)
     exit(0)
 
 def send_result(**kdict):
@@ -91,7 +100,7 @@ def do_compile():
         #cmd = "ls"
     else:
         send_result(**{"debug": "unsupported language"})
-        exit(1)
+        exit(0)
 
     f = open(srcfile, "w", 0644)
     f.write(CODE)
@@ -99,13 +108,25 @@ def do_compile():
 
     signal.signal(signal.SIGALRM, sighandler)
     signal.alarm(5)
-    status, output = commands.getstatusoutput(cmd)
+
+    try:
+        popen = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT)
+        stdout, stderr = popen.communicate()
+    except CompileTimeout:
+        send_result(**{"result": "Compile Error",
+            "debug": "Compile too long time"})
+        popen.terminate()
+        clean_exit(tmpstr)
+    except Exception:
+        send_result(**{"result": "Internal Error",
+            "debug": traceback.format_exc()})
+        clean_exit(tmpstr)
+
     signal.alarm(0)
-    if status != 0:
-        send_result(**{"result": "Compile Error", "msg": output})
-        os.chdir(WORKDIR)
-        os.system("rm -rf %s*" % tmpstr)
-        exit(1)
+    if popen.returncode != 0:
+        send_result(**{"result": "Compile Error", "msg": stdout})
+        clean_exit(tmpstr)
     return tmpstr
 
 def do_judge(tmpstr):
