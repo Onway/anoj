@@ -6,3 +6,5 @@ judger:
 14，java输出过滤
 16，除SIGXCPU外，用户进程的任何退出原因都应该先判断是否超时。
 18，评测任务的并发问题没有解决。
+19，output limit for java takes no effect.
+20，SIGXCPU terminate process, but not stop by ptrace for java.

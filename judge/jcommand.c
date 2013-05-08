@@ -85,7 +85,7 @@ execute_jcommand()
         kill(child, SIGKILL);
         result->code = EXIT_IE;
         g_string_assign(result->err,
-                "unexpect child stop before exec syscall");
+                "unexpected child stop before execve");
         return;
         
     }
@@ -133,7 +133,7 @@ trace_child(pid_t child)
 
         /* 子进程退出 */
         if (WIFEXITED(status)) {
-            if (result->time > ltime)
+            if (result->time >= ltime)
                 result->code = EXIT_TLE;
             else
                 result->code = EXIT_AC;
@@ -142,8 +142,13 @@ trace_child(pid_t child)
 
         /* 子进程被信号终止 */
         if (WIFSIGNALED(status)) {
+            if (WTERMSIG(status) == SIGXCPU) {
+                result->code = EXIT_TLE;
+                result->time = ltime;
+                return;
+            }
             result->code = EXIT_RE;
-            g_string_printf(result->err, "Invalid Signal %d", WTERMSIG(status));
+            g_string_printf(result->err, "Invaid Signal %d", WTERMSIG(status));
             return;
         }
 
@@ -156,17 +161,11 @@ trace_child(pid_t child)
         }
 
         signo = WSTOPSIG(status); 
-        if (signo == SIGXCPU)
-            result->code = EXIT_TLE;
-        else if (signo == SIGXFSZ)
-            result->code = EXIT_OLE;
-        else {
-            ptrace(PTRACE_SYSCALL, child, 0, 0);
-            continue;
-        }
+        if (signo != SIGTRAP)
+            ptrace(PTRACE_CONT, child, NULL, signo);
+        else
+            ptrace(PTRACE_SYSCALL, child, NULL, NULL);
 
-        kill(child, SIGKILL);
-        return;
     } // end while
 } // end function
 

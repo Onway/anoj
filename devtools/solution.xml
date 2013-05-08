@@ -95,4 +95,294 @@ print a + b
         </code>
     </solution>
 
+    <solution>
+        <rid>5</rid>
+        <pid>1000</pid>
+        <desc>a + b</desc>
+        <time unit="ms">1000</time>
+        <memory unit="kb">32768</memory>
+        <outsize unit="kb">1024</outsize>
+        <lang>c</lang>
+        <expect>Compile Error(syntax error)</expect>
+        <code>
+<![CDATA[
+#include <stdio.h>
+
+int main()
+{
+    int a, b;
+    scanf("%d%d", &a, &b);
+    printf("%d\n", a + b);
+    return 0
+}   
+]]>
+        </code>
+    </solution>
+
+    <solution>
+        <rid>6</rid>
+        <pid>1000</pid>
+        <desc>a + b</desc>
+        <time unit="ms">1000</time>
+        <memory unit="kb">32768</memory>
+        <outsize unit="kb">1024</outsize>
+        <lang>c++</lang>
+        <expect>Compile Error(syntax error)</expect>
+        <code>
+<![CDATA[
+#include <iostream>
+
+int main()
+{
+    int a, b;
+    std::cin >> a >> b;
+    std::cout << a + b << std::endl;
+    return 0
+}
+]]>
+        </code>
+    </solution>
+
+    <solution>
+        <rid>7</rid>
+        <pid>1000</pid>
+        <desc>a + b</desc>
+        <time unit="ms">1000</time>
+        <memory unit="kb">32768</memory>
+        <outsize unit="kb">1024</outsize>
+        <lang>java</lang>
+        <expect>Compile Error(syntax error)</expect>
+        <code>
+<![CDATA[
+import java.io.*;
+import java.util.*;
+
+public class Main
+{
+    public static void main(String args[])
+    {
+        int a, b;
+        Scanner cin = new Scanner(System.in);
+
+        a = cin.nextInt();
+        b = cin.nextInt();
+        System.out.println(a + b);
+    }
+}
+]]>
+        </code>
+    </solution>
+
+    <solution>
+        <rid>8</rid>
+        <pid>1000</pid>
+        <desc>a + b</desc>
+        <time unit="ms">1000</time>
+        <memory unit="kb">32768</memory>
+        <outsize unit="kb">1024</outsize>
+        <lang>python</lang>
+        <expect>Compile Error(syntax error)</expect>
+        <code>
+<![CDATA[
+a, b = map(in, raw_input().split())
+print a + b
+]]>
+        </code>
+    </solution>
+
+    <solution>
+        <rid>9</rid>
+        <pid>1000</pid>
+        <desc>a + b</desc>
+        <time unit="ms">1000</time>
+        <memory unit="kb">32768</memory>
+        <outsize unit="kb">1024</outsize>
+        <lang>c</lang>
+        <expect>Compile Error(compile timeout)</expect>
+        <code>
+<![CDATA[
+#include <stdio.h>
+char s[1000000000];
+
+int main()
+{
+    int a, b;
+    scanf("%d%d", &a, &b);
+    printf("%d\n", a + b);
+    return 0;
+}   
+]]>
+        </code>
+    </solution>
+
+    <solution>
+        <rid>10</rid>
+        <pid>1000</pid>
+        <desc>a + b</desc>
+        <time unit="ms">1000</time>
+        <memory unit="kb">32768</memory>
+        <outsize unit="kb">1024</outsize>
+        <lang>c</lang>
+        <expect>Wrong Answer</expect>
+        <code>
+<![CDATA[
+#include <stdio.h>
+
+int main()
+{
+    int a, b;
+    scanf("%d%d", &a, &b);
+    printf("%d\n", a + b + 1);
+    return 0;
+}   
+]]>
+        </code>
+    </solution>
+
+    <solution>
+        <rid>11</rid>
+        <pid>1000</pid>
+        <desc>a + b</desc>
+        <time unit="ms">1000</time>
+        <memory unit="kb">32768</memory>
+        <outsize unit="kb">1024</outsize>
+        <lang>c</lang>
+        <expect>Time Limit Exceeded</expect>
+        <code>
+<![CDATA[
+#include <stdio.h>
+#include <unistd.h>
+
+int main()
+{
+    int a, b;
+    scanf("%d%d", &a, &b);
+    printf("%d\n", a + b);
+    sleep(3);
+    return 0;
+}   
+]]>
+        </code>
+    </solution>
+
+    <solution>
+        <rid>12</rid>
+        <pid>1000</pid>
+        <desc>a + b</desc>
+        <time unit="ms">1000</time>
+        <memory unit="kb">32768</memory>
+        <outsize unit="kb">1024</outsize>
+        <lang>c</lang>
+        <expect>Time Limit Exceeded</expect>
+        <code>
+<![CDATA[
+#include <stdio.h>
+
+int main()
+{
+    int a, b;
+    int i, j, k, len = 5000;
+
+    scanf("%d%d", &a, &b);
+    printf("%d\n", a + b);
+
+    for (i = 0; i < len; ++i)
+        for (j = 0; j < len; ++j)
+            for (k = 0; k < len; ++k)
+                a = i + j + k;
+    return 0;
+}   
+]]>
+        </code>
+    </solution>
+
+    <solution>
+        <rid>13</rid>
+        <pid>1000</pid>
+        <desc>a + b</desc>
+        <time unit="ms">1000</time>
+        <memory unit="kb">32768</memory>
+        <outsize unit="kb">1024</outsize>
+        <lang>c++</lang>
+        <expect>Time Limit Exceeded</expect>
+        <code>
+<![CDATA[
+#include <iostream>
+
+int main()
+{
+    int a, b;
+    int i, j, k, len = 5000;
+
+    std::cin >> a >> b;
+    std::cout << a + b << std::endl;
+
+    for (i = 0; i < len; ++i)
+        for (j = 0; j < len; ++j)
+            for (k = 0; k < len; ++k)
+                a = i + j + k;
+    return 0;
+}
+]]>
+        </code>
+    </solution>
+
+    <solution>
+        <rid>14</rid>
+        <pid>1000</pid>
+        <desc>a + b</desc>
+        <time unit="ms">1000</time>
+        <memory unit="kb">32768</memory>
+        <outsize unit="kb">1024</outsize>
+        <lang>python</lang>
+        <expect>Time Limit Exceeded</expect>
+        <code>
+<![CDATA[
+a, b = map(int, raw_input().split())
+print a + b
+
+len = 5000
+for i in xrange(1, len):
+    for j in xrange(1, len):
+        for k in xrange(1, len):
+            a = i + j + k
+]]>
+        </code>
+    </solution>
+
+    <solution>
+        <rid>15</rid>
+        <pid>1000</pid>
+        <desc>a + b</desc>
+        <time unit="ms">1000</time>
+        <memory unit="kb">32768</memory>
+        <outsize unit="kb">1024</outsize>
+        <lang>java</lang>
+        <expect>Time Limit Exceeded</expect>
+        <code>
+<![CDATA[
+import java.io.*;
+import java.util.*;
+
+public class Main
+{
+    public static void main(String args[])
+    {
+        int a, b;
+        int i, j, k, len = 50000;
+        Scanner cin = new Scanner(System.in);
+
+        a = cin.nextInt();
+        b = cin.nextInt();
+        System.out.println(a + b);
+
+        for (i = 0; i < len; ++i)
+            for (j = 0; j < len; ++j)
+                for (k = 0; k < len; ++k)
+                    a = (i + k) % (j + 1);
+    }
+}
+]]>
+        </code>
+    </solution>
 </root>

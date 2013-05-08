@@ -84,7 +84,7 @@ execute_command()
         kill(child, SIGKILL);
         result->code = EXIT_IE;
         g_string_assign(result->err,
-                "unknow child status before exec syscall");
+                "unknow child status before execve");
         return;
     }
 
@@ -95,7 +95,7 @@ execute_command()
         kill(child, SIGKILL);
         result->code = EXIT_IE;
         g_string_assign(result->err,
-                "unexpect child stop before exec syscall");
+                "unexpected child stop before execve");
         return;
         
     }
@@ -142,9 +142,9 @@ trace_child(pid_t child)
 
         /* 子进程退出 */
         if (WIFEXITED(status)) {
-            if (result->time > ltime)
+            if (result->time >= ltime)
                 result->code = EXIT_TLE;
-            else if (result->memory > memory)
+            else if (result->memory >= memory)
                 result->code = EXIT_MLE;
             else
                 result->code = EXIT_AC;
@@ -209,7 +209,7 @@ trace_child(pid_t child)
         }
 
         /* endflag == 1 系统调用之后，判断内存使用 */
-        if (result->memory > memory) {
+        if (result->memory >= memory) {
             kill(child, SIGKILL);
             result->code = EXIT_MLE;
             return;
