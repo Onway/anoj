@@ -1056,4 +1056,42 @@ for i in sorted(s):
 ]]>
         </code>
     </solution>
+
+    <solution>
+        <rid>41</rid>
+        <pid>1004</pid>
+        <desc>sort</desc>
+        <time unit="ms">1000</time>
+        <memory unit="kb">32768</memory>
+        <outsize unit="kb">1024</outsize>
+        <lang>java</lang>
+        <expect>Accepted</expect>
+        <code>
+<![CDATA[
+import java.io.*;
+import java.util.*;
+
+public class Main
+{
+    public static void main(String[] args)
+    {
+        int a, b, n;
+        int[] s = null;
+
+        Scanner cin = new Scanner(System.in);
+        n = cin.nextInt();
+
+        s = new int[n];
+        for (int i = 0; i < n; ++i)
+            s[i] = cin.nextInt();
+
+        Arrays.sort(s);
+
+        for (int i = 0; i < n; ++i)
+            System.out.print(s[i] + " ");
+    }
+}   
+]]>
+        </code>
+    </solution>
 </root>

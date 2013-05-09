@@ -26,7 +26,7 @@ def request_judge(xmlfile):
         print 'sending request >>>', repr(kdict)
         print
         urllib2.urlopen(urllib2.Request(URL, urllib.urlencode(kdict)))
-        time.sleep(2)
+        # time.sleep(2)
 
 def analyse_result(xmlfile, respath):
     pass
