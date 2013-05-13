@@ -44,7 +44,7 @@ static char * summary =
 static GOptionEntry entries[] = 
 {
     {"time", 't', 0, G_OPTION_ARG_INT, &ltime,
-        "Time limit in milliseconds", "N"},
+        "Time limit in milliseconds, round up to second", "N"},
     {"memory", 'm', 0, G_OPTION_ARG_INT, &memory,
         "Memory limit in kbytes.No effect for java", "N"},
     {"fsize", 'f', 0, G_OPTION_ARG_INT, &fsize,
@@ -85,7 +85,7 @@ parse_cmdline(int *argc, char ***argv)
     else
         command = &(*argv)[1];
 
-    !ltime && (ltime = 1000);
+    ltime = ltime ? (int)ceil(ltime / 1000.0) * 1000 : 1000;
     !memory && (memory = 32768);
     !fsize && (fsize = 1024); 
     !lang && (lang = g_strdup("c"));

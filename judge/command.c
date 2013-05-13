@@ -15,17 +15,15 @@ extern char * const * command;
 extern GString * input;
 extern GString * output;
 extern GString * answer;
+/*
 extern GSList * resource_rule;
 extern GSList * environ_rule;
+*/
 extern int signal_rule[];
 extern gboolean syscall_rule[];
 extern char * feedback[];
 extern Result * result;
 extern struct passwd * pwd;
-
-/* 子进程在执行exec调用之前的内存和时间，用于最后的资源统计 */
-static int pre_time;
-static int pre_memory;
 
 static jmp_buf jbuf;
 
@@ -100,11 +98,10 @@ execute_command()
         
     }
 
-    /* 子进程状态符合，获取exec之前的时间和内存 */
-    pre_time = get_time(&used);
-    pre_memory = get_memory(&used);
-
-    /* 注册父进程挂种时间及超时回跳位置 */
+    /*
+     * 注册父进程挂种时间及超时回跳位置
+     * 超挂种时间直接判超时，检查内存没有必要了。
+     */
     signal(SIGALRM, alarm_func);
     if (setjmp(jbuf)) {
         kill(child, SIGKILL);
@@ -112,10 +109,7 @@ execute_command()
         result->code = EXIT_TLE;
         return;
     }
-    if (ltime % 1000)
-        alarm(ltime / 1000 + 3);
-    else
-        alarm(ltime / 1000 + 2);
+    alarm(ltime / 1000 + 2);
 
     /* 继续并跟踪子进程 */
     ptrace(PTRACE_SYSCALL, child, NULL, NULL);
@@ -143,7 +137,7 @@ trace_child(pid_t child)
         /* 子进程退出 */
         if (WIFEXITED(status)) {
             if (result->time >= ltime)
-                result->code = EXIT_TLE;
+                result->code = EXIT_MLE;
             else if (result->memory >= memory)
                 result->code = EXIT_MLE;
             else
@@ -151,19 +145,37 @@ trace_child(pid_t child)
             return;
         }
 
-        /* 子进程被信号终止 */
+        /* 子进程被信号终止，先判断内存 */
         if (WIFSIGNALED(status)) {
+            if (result->memory >= memory) {
+                result->code = EXIT_MLE;
+                return;
+            }
+
             result->code = EXIT_RE;
-            g_string_printf(result->err, "%s %d", feedback[WTERMSIG(status)],
-                    WTERMSIG(status));
+            if (strcmp(feedback[WTERMSIG(status)], "") == 0)
+                g_string_printf(result->err, "killed by signal %d",
+                        WTERMSIG(status));
+            else
+                g_string_printf(result->err, "%s", feedback[WTERMSIG(status)]);
             return;
         }
 
-        /* 除了结束外，期待的是停止状态，如果不是 */
+        /*
+         * 除了结束外，期待的是停止状态，如果不是
+         * EXIT_IE意味bug的产生，不用再判断其他。
+         */
         if (!WIFSTOPPED(status)) {
             kill(child, SIGKILL);
             result->code = EXIT_IE;
             g_string_assign(result->err, "unknow user program status");
+            return;
+        }
+
+        /* 只要子进程被暂停，先判断内存 */
+        if ((result->memory = get_memory(&used)) >= memory) {
+            kill(child, SIGKILL);
+            result->code = EXIT_MLE;
             return;
         }
 
@@ -185,11 +197,14 @@ trace_child(pid_t child)
             if (signo == SIGXFSZ) {
                 result->code = EXIT_OLE;
             } else if (signo == SIGXCPU) {
-                result->time = ltime;
+                result->time = get_time(&used);
                 result->code = EXIT_TLE;   
             } else {
                 result->code = EXIT_RE;
-                g_string_printf(result->err, "%s %d", feedback[signo], signo);
+                if (strcmp(feedback[signo], "") == 0)
+                    g_string_printf(result->err, "invalid signal %d", signo);
+                else
+                    g_string_printf(result->err, "%s", feedback[signo]);
             }
             return;
         }
@@ -204,14 +219,7 @@ trace_child(pid_t child)
         } else if (endflag == 0) {
             kill(child, SIGKILL);
             result->code = EXIT_RE;
-            g_string_printf(result->err, "Invalid Syscall %ld", regs.orig_eax);
-            return;
-        }
-
-        /* endflag == 1 系统调用之后，判断内存使用 */
-        if (result->memory >= memory) {
-            kill(child, SIGKILL);
-            result->code = EXIT_MLE;
+            g_string_printf(result->err, "invalid syscall %ld", regs.orig_eax);
             return;
         }
 
@@ -222,8 +230,6 @@ trace_child(pid_t child)
 static void
 setup_child()
 {
-    char ** env;
-    
     /* io需要在降权之前设置，因为需要打开一个输出文件 */
     setup_io();
     
@@ -233,14 +239,15 @@ setup_child()
             setresuid(pwd->pw_uid, pwd->pw_uid, pwd->pw_uid) != 0)
         exit(0);
 
-    env = g_get_environ();
     chdir(workdir);
+    /*
     g_slist_foreach(resource_rule, foreach_resource, NULL);
     g_slist_foreach(environ_rule, foreach_environ, &env);
+    */
     setup_resource();
     ptrace(PTRACE_TRACEME, 0, NULL, NULL);
 
-    execvpe(command[0], command, (char * const *)env);
+    execvpe(command[0], command, (char * const *)g_get_environ());
     exit(1);
 }
 
@@ -267,10 +274,7 @@ setup_resource()
 {
     struct rlimit t;
 
-    if (ltime % 1000 == 0)
-        t.rlim_cur = ltime / 1000;
-    else
-        t.rlim_cur = ltime / 1000 + 1;
+    t.rlim_cur = ltime / 1000;
     t.rlim_max = t.rlim_cur + 1;
     setrlimit(RLIMIT_CPU, &t);
 
@@ -279,6 +283,15 @@ setup_resource()
 
     t.rlim_cur = t.rlim_max = RLIM_INFINITY;
     setrlimit(RLIMIT_AS, &t);
+
+    t.rlim_cur = t.rlim_max = 0;
+    setrlimit(RLIMIT_CORE, &t);
+
+    t.rlim_cur = t.rlim_max = 0;
+    setrlimit(RLIMIT_NPROC, &t);
+
+    t.rlim_cur = t.rlim_max = 30;
+    setrlimit(RLIMIT_NOFILE, &t);
 
     /*
     t.rlim_cur = t.rlim_max = memory * 1024;
@@ -323,14 +336,16 @@ foreach_environ(gpointer data, gpointer user_data)
 static int
 get_time(struct rusage *used)
 {
-    return (*used).ru_utime.tv_sec * 1000 + 
-        (*used).ru_utime.tv_usec / 1000 +
-        (*used).ru_stime.tv_sec * 1000 +
-        (*used).ru_stime.tv_usec / 1000 - pre_time;
+    return (*used).ru_utime.tv_sec * 1000 + (*used).ru_stime.tv_sec * 1000 +
+        /*
+        (int)ceil((*used).ru_utime.tv_usec / 1000.0) +
+        (int)ceil((*used).ru_stime.tv_usec / 1000.0);
+        */
+        (int)ceil((((*used).ru_utime.tv_usec + (*used).ru_stime.tv_usec)) / 1000.0);
 }
 
 static int
 get_memory(struct rusage *used)
 {
-    return  (*used).ru_minflt * getpagesize() / 1024 - pre_memory;
+    return  (*used).ru_minflt * getpagesize() / 1024;
 }

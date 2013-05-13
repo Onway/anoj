@@ -11,6 +11,7 @@
 #include <string.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <math.h>
 #include <errno.h>
 #include <setjmp.h>
 #include <pwd.h>

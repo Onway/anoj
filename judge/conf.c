@@ -24,8 +24,10 @@ init_conf()
 {
     init_signal_rule();
     init_feedback();
+    /*
     init_environ_rule();
     init_resource_rule();
+    */
     init_syscall_rule();
 }
 
