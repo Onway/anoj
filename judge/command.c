@@ -10,6 +10,7 @@
 extern int ltime;
 extern int fsize;
 extern int memory;
+extern char * lang;
 extern char * workdir;
 extern char * const * command;
 extern GString * input;
@@ -34,6 +35,7 @@ static void setup_io();                     /* 子进程io重定向 */
 static void setup_resource();               /* 子进程资源特定设置 */
 static int get_time(struct rusage *used);   /* 子进程时间使用 */
 static int get_memory(struct rusage *used); /* 子进程内存使用 */
+static void python_filter();                 /* python的re判断 */
 
 /* 启动子进程，安装时钟信号，获取子进程在exec之前的时间内存 */
 void execute_command();
@@ -117,6 +119,9 @@ execute_command()
 
     /* 非超时返回 */
     alarm(0);
+
+    if (strcmp(lang, "python") == 0)
+        python_filter();
     return;
 }
 
@@ -348,4 +353,21 @@ static int
 get_memory(struct rusage *used)
 {
     return  (*used).ru_minflt * getpagesize() / 1024;
+}
+
+static void
+python_filter()
+{
+    int status;
+    char cmd[4096];
+
+    sprintf(cmd, "grep -q '^Traceback (most recent call last):' %s",
+            output->str);
+    status = system(cmd);
+    if (status == -1)   return;
+
+    if (WEXITSTATUS(status) == 0) {
+        result->code = EXIT_RE;
+        return;
+    }
 }
