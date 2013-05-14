@@ -142,7 +142,7 @@ trace_child(pid_t child)
         /* 子进程退出 */
         if (WIFEXITED(status)) {
             if (result->time >= ltime)
-                result->code = EXIT_MLE;
+                result->code = EXIT_TLE;
             else if (result->memory >= memory)
                 result->code = EXIT_MLE;
             else
@@ -346,7 +346,8 @@ get_time(struct rusage *used)
         (int)ceil((*used).ru_utime.tv_usec / 1000.0) +
         (int)ceil((*used).ru_stime.tv_usec / 1000.0);
         */
-        (int)ceil((((*used).ru_utime.tv_usec + (*used).ru_stime.tv_usec)) / 1000.0);
+        (int)ceil((((*used).ru_utime.tv_usec +
+                        (*used).ru_stime.tv_usec)) / 1000.0);
 }
 
 static int
@@ -364,7 +365,6 @@ python_filter()
     sprintf(cmd, "grep -q '^Traceback (most recent call last):' %s",
             output->str);
     status = system(cmd);
-    if (status == -1)   return;
 
     if (WEXITSTATUS(status) == 0) {
         result->code = EXIT_RE;

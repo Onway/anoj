@@ -130,8 +130,8 @@ def do_compile():
     return tmpstr
 
 def do_judge(tmpstr):
-    cmd = "judger -t %s -f %s -l %s -d %s " % (TIME, OUTSIZE, LANG,
-            os.path.join(DATADIR, PID))
+    cmd = "judger -t %s -f %s -l %s -d %s -m %s " % (TIME, OUTSIZE, LANG,
+            os.path.join(DATADIR, PID), MEMORY)
 
     if LANG != "java":
         workdir = WORKDIR
@@ -139,9 +139,6 @@ def do_judge(tmpstr):
         workdir = os.path.join(WORKDIR, tmpstr)
     cmd += "-w %s " % workdir
 
-    if LANG != "java":
-        cmd += "-m %s " % MEMORY
-    
     cmd += "-- "
 
     if LANG == "c" or LANG == "c++":
@@ -149,9 +146,8 @@ def do_judge(tmpstr):
     elif LANG == "python":
         cmd += "python -S %s.py" % tmpstr
     elif LANG == "java":
-        cmd += "java -Xms%dk -Xmx%dk -Djava.security.manager -Djava.security.policy=%s Main" % (
-                int(MEMORY), int(MEMORY) * 2,
-                os.path.join("/etc/wyuoj/java.policy"))
+        cmd += "java -Djava.security.manager -Djava.security.policy=%s Main" % (
+                "/etc/wyuoj/java.policy", )
     
     status, output = commands.getstatusoutput(cmd)
     if status == 0:

@@ -1094,4 +1094,36 @@ public class Main
 ]]>
         </code>
     </solution>
+
+    <solution>
+        <rid>42</rid>
+        <pid>1000</pid>
+        <desc>write file</desc>
+        <time unit="ms">1000</time>
+        <memory unit="kb">32768</memory>
+        <outsize unit="kb">1024</outsize>
+        <lang>java</lang>
+        <expect>Runtime Error</expect>
+        <code>
+<![CDATA[
+import java.io.*;
+
+public class Main
+{
+    public static void main(String[] args)
+    {
+        String str = "hello world\n";
+        try {
+            FileWriter fw = new FileWriter("hello.txt");
+            fw.write(str, 0, str.length());
+            fw.flush();
+            fw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+]]>
+        </code>
+    </solution>
 </root>

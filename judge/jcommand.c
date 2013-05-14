@@ -9,6 +9,7 @@
 
 extern int ltime;
 extern int fsize;
+extern int memory;
 
 extern GString * input;
 extern GString * output;
@@ -19,8 +20,6 @@ extern char * const * command;
 extern Result * result;
 extern struct passwd * pwd;
 
-static int pre_time;
-static int pre_memory;
 static jmp_buf jbuf;
 
 static void alarm_func(int signo);
@@ -74,7 +73,7 @@ execute_jcommand()
         kill(child, SIGKILL);
         result->code = EXIT_IE;
         g_string_assign(result->err,
-                "unknow child status before exec syscall");
+                "unknow child status before execve");
         return;
     }
 
@@ -90,10 +89,6 @@ execute_jcommand()
         
     }
 
-    /* 子进程状态符合，获取exec之前的时间和内存 */
-    pre_time = get_time(&used);
-    pre_memory = get_memory(&used);
-
     /* 注册父进程挂种时间及超时回跳位置 */
     signal(SIGALRM, alarm_func);
     if (setjmp(jbuf)) {
@@ -102,10 +97,7 @@ execute_jcommand()
         result->code = EXIT_TLE;
         return;
     }
-    if (ltime % 1000)
-        alarm(ltime / 1000 + 3);
-    else
-        alarm(ltime / 1000 + 2);
+    alarm(ltime / 1000 + 2);
 
     /* 继续并等待子进程 */
     ptrace(PTRACE_SYSCALL, child, NULL, NULL);
@@ -133,8 +125,8 @@ trace_child(pid_t child)
 
         /* 子进程退出 */
         if (WIFEXITED(status)) {
-            if (result->time >= ltime)
-                result->code = EXIT_TLE;
+            if (result->memory >= memory)
+                result->code = EXIT_MLE;
             else
                 result->code = EXIT_AC;
             return;
@@ -144,11 +136,10 @@ trace_child(pid_t child)
         if (WIFSIGNALED(status)) {
             if (WTERMSIG(status) == SIGXCPU) {
                 result->code = EXIT_TLE;
-                result->time = ltime;
                 return;
             }
             result->code = EXIT_RE;
-            g_string_printf(result->err, "Invaid Signal %d", WTERMSIG(status));
+            g_string_printf(result->err, "invaid signal %d", WTERMSIG(status));
             return;
         }
 
@@ -160,12 +151,18 @@ trace_child(pid_t child)
             return;
         }
 
+        /* 被停止，判断内存 */
+        if (result->memory >= memory) {
+            kill(child, SIGKILL);
+            result->code = EXIT_MLE;
+            return;
+        }
+
         signo = WSTOPSIG(status); 
         if (signo != SIGTRAP)
             ptrace(PTRACE_CONT, child, NULL, signo);
         else
             ptrace(PTRACE_SYSCALL, child, NULL, NULL);
-
     } // end while
 } // end function
 
@@ -212,38 +209,30 @@ setup_resource()
 {
     struct rlimit t;
 
-    if (ltime % 1000 == 0)
-        t.rlim_cur = ltime / 1000;
-    else
-        t.rlim_cur = ltime / 1000 + 1;
+    t.rlim_cur = ltime / 1000;
     t.rlim_max = t.rlim_cur + 1;
     setrlimit(RLIMIT_CPU, &t);
 
     t.rlim_cur = t.rlim_max = fsize * 1024;
     setrlimit(RLIMIT_FSIZE, &t);
-
-    t.rlim_cur = t.rlim_max = RLIM_INFINITY;
-    setrlimit(RLIMIT_AS, &t);
-
-    /*
-    t.rlim_cur = t.rlim_max = memory * 1024;
-    setrlimit(RLIMIT_DATA, &t);
-    */
 }
 
 static int
 get_time(struct rusage *used)
 {
-    return (*used).ru_utime.tv_sec * 1000 + 
-        (*used).ru_utime.tv_usec / 1000 +
-        (*used).ru_stime.tv_sec * 1000 +
-        (*used).ru_stime.tv_usec / 1000 - pre_time;
+    return (*used).ru_utime.tv_sec * 1000 + (*used).ru_stime.tv_sec * 1000 +
+        /*
+        (int)ceil((*used).ru_utime.tv_usec / 1000.0) +
+        (int)ceil((*used).ru_stime.tv_usec / 1000.0);
+        */
+        (int)ceil((((*used).ru_utime.tv_usec +
+                        (*used).ru_stime.tv_usec)) / 1000.0);
 }
 
 static int
 get_memory(struct rusage *used)
 {
-    return  (*used).ru_minflt * getpagesize() / 1024 - pre_memory;
+    return  (*used).ru_minflt * getpagesize() / 1024;
 }
 
 static void
@@ -256,5 +245,33 @@ alarm_func(int signo)
 static void
 filter_output()
 {
-    return;
+    int status;
+    char cmd[4096];
+    struct stat stbuf;
+
+    stat(output->str, &stbuf);
+    if (stbuf.st_size >= fsize * 1024) {
+        result->code = EXIT_OLE;
+        return;
+    }
+
+    /*
+    sprintf(cmd,
+        "grep -q '^Exception in thread.*java\\.lang\\.OutOfMemoryError:' %s",
+        output->str);
+    status = system(cmd);
+    if (WEXITSTATUS(status) == 0) {
+        result->code = EXIT_MLE;
+        return;
+    }
+    */
+    
+    sprintf(cmd,
+      "egrep -q '^Exception in thread.*java\\..*(Exception|Error):' %s",
+      output->str);
+    status = system(cmd);
+    if (WEXITSTATUS(status) == 0) {
+        result->code = EXIT_RE;
+        return;
+    }
 }

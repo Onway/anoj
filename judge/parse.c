@@ -46,7 +46,7 @@ static GOptionEntry entries[] =
     {"time", 't', 0, G_OPTION_ARG_INT, &ltime,
         "Time limit in milliseconds, round up to second", "N"},
     {"memory", 'm', 0, G_OPTION_ARG_INT, &memory,
-        "Memory limit in kbytes.No effect for java", "N"},
+        "Memory limit in kbytes.", "N"},
     {"fsize", 'f', 0, G_OPTION_ARG_INT, &fsize,
         "Answer output limit in kbytes", "N"},
     {"lang", 'l', 0, G_OPTION_ARG_STRING, &lang,
