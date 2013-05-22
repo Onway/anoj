@@ -274,4 +274,11 @@ filter_output()
         result->code = EXIT_RE;
         return;
     }
+
+    sprintf(cmd, "egrep -q '^java\\.security\\..*Exception:' %s", output->str);
+    status = system(cmd);
+    if (WEXITSTATUS(status) == 0) {
+        result->code = EXIT_RE;
+        return;
+    }
 }

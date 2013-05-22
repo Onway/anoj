@@ -3,7 +3,7 @@
     <solution>
         <rid>1</rid>
         <pid>1000</pid>
-        <desc>a + b</desc>
+        <desc>base function</desc>
         <time unit="ms">1000</time>
         <memory unit="kb">32768</memory>
         <outsize unit="kb">1024</outsize>
@@ -27,7 +27,7 @@ int main()
     <solution>
         <rid>2</rid>
         <pid>1000</pid>
-        <desc>a + b</desc>
+        <desc>base function</desc>
         <time unit="ms">1000</time>
         <memory unit="kb">32768</memory>
         <outsize unit="kb">1024</outsize>
@@ -51,7 +51,7 @@ int main()
     <solution>
         <rid>3</rid>
         <pid>1000</pid>
-        <desc>a + b</desc>
+        <desc>base function</desc>
         <time unit="ms">1000</time>
         <memory unit="kb">32768</memory>
         <outsize unit="kb">1024</outsize>
@@ -81,7 +81,7 @@ public class Main
     <solution>
         <rid>4</rid>
         <pid>1000</pid>
-        <desc>a + b</desc>
+        <desc>base function</desc>
         <time unit="ms">1000</time>
         <memory unit="kb">32768</memory>
         <outsize unit="kb">1024</outsize>
@@ -98,7 +98,7 @@ print a + b
     <solution>
         <rid>5</rid>
         <pid>1000</pid>
-        <desc>a + b</desc>
+        <desc>base function</desc>
         <time unit="ms">1000</time>
         <memory unit="kb">32768</memory>
         <outsize unit="kb">1024</outsize>
@@ -122,7 +122,7 @@ int main()
     <solution>
         <rid>6</rid>
         <pid>1000</pid>
-        <desc>a + b</desc>
+        <desc>base function</desc>
         <time unit="ms">1000</time>
         <memory unit="kb">32768</memory>
         <outsize unit="kb">1024</outsize>
@@ -146,7 +146,7 @@ int main()
     <solution>
         <rid>7</rid>
         <pid>1000</pid>
-        <desc>a + b</desc>
+        <desc>base function</desc>
         <time unit="ms">1000</time>
         <memory unit="kb">32768</memory>
         <outsize unit="kb">1024</outsize>
@@ -176,7 +176,7 @@ public class Main
     <solution>
         <rid>8</rid>
         <pid>1000</pid>
-        <desc>a + b</desc>
+        <desc>base function</desc>
         <time unit="ms">1000</time>
         <memory unit="kb">32768</memory>
         <outsize unit="kb">1024</outsize>
@@ -193,7 +193,7 @@ print a + b
     <solution>
         <rid>9</rid>
         <pid>1000</pid>
-        <desc>a + b</desc>
+        <desc>base function</desc>
         <time unit="ms">1000</time>
         <memory unit="kb">32768</memory>
         <outsize unit="kb">1024</outsize>
@@ -218,7 +218,7 @@ int main()
     <solution>
         <rid>10</rid>
         <pid>1000</pid>
-        <desc>a + b</desc>
+        <desc>base function</desc>
         <time unit="ms">1000</time>
         <memory unit="kb">32768</memory>
         <outsize unit="kb">1024</outsize>
@@ -242,7 +242,7 @@ int main()
     <solution>
         <rid>11</rid>
         <pid>1000</pid>
-        <desc>a + b</desc>
+        <desc>base function</desc>
         <time unit="ms">1000</time>
         <memory unit="kb">32768</memory>
         <outsize unit="kb">1024</outsize>
@@ -268,7 +268,7 @@ int main()
     <solution>
         <rid>12</rid>
         <pid>1000</pid>
-        <desc>a + b</desc>
+        <desc>base function</desc>
         <time unit="ms">1000</time>
         <memory unit="kb">32768</memory>
         <outsize unit="kb">1024</outsize>
@@ -299,7 +299,7 @@ int main()
     <solution>
         <rid>13</rid>
         <pid>1000</pid>
-        <desc>a + b</desc>
+        <desc>base function</desc>
         <time unit="ms">1000</time>
         <memory unit="kb">32768</memory>
         <outsize unit="kb">1024</outsize>
@@ -330,7 +330,7 @@ int main()
     <solution>
         <rid>14</rid>
         <pid>1000</pid>
-        <desc>a + b</desc>
+        <desc>base function</desc>
         <time unit="ms">1000</time>
         <memory unit="kb">32768</memory>
         <outsize unit="kb">1024</outsize>
@@ -353,7 +353,7 @@ for i in xrange(1, len):
     <solution>
         <rid>15</rid>
         <pid>1000</pid>
-        <desc>a + b</desc>
+        <desc>base function</desc>
         <time unit="ms">1000</time>
         <memory unit="kb">32768</memory>
         <outsize unit="kb">1024</outsize>
@@ -389,7 +389,7 @@ public class Main
     <solution>
         <rid>16</rid>
         <pid>1000</pid>
-        <desc>a + b</desc>
+        <desc>base function</desc>
         <time unit="ms">1000</time>
         <memory unit="kb">32768</memory>
         <outsize unit="kb">1024</outsize>
@@ -418,7 +418,7 @@ int main()
     <solution>
         <rid>17</rid>
         <pid>1000</pid>
-        <desc>a + b</desc>
+        <desc>base function</desc>
         <time unit="ms">1000</time>
         <memory unit="kb">32768</memory>
         <outsize unit="kb">1024</outsize>
@@ -447,7 +447,7 @@ int main()
     <solution>
         <rid>18</rid>
         <pid>1000</pid>
-        <desc>a + b</desc>
+        <desc>base function</desc>
         <time unit="ms">1000</time>
         <memory unit="kb">32768</memory>
         <outsize unit="kb">1024</outsize>
@@ -467,7 +467,7 @@ for i in xrange(1, 1024 * 1024):
     <solution>
         <rid>19</rid>
         <pid>1000</pid>
-        <desc>a + b</desc>
+        <desc>base function</desc>
         <time unit="ms">1000</time>
         <memory unit="kb">32768</memory>
         <outsize unit="kb">1024</outsize>
@@ -503,7 +503,7 @@ public class Main
     <solution>
         <rid>20</rid>
         <pid>1000</pid>
-        <desc>a + b</desc>
+        <desc>base function</desc>
         <time unit="ms">1000</time>
         <memory unit="kb">32768</memory>
         <outsize unit="kb">1024</outsize>
@@ -534,7 +534,7 @@ int main()
     <solution>
         <rid>21</rid>
         <pid>1000</pid>
-        <desc>a + b</desc>
+        <desc>base function</desc>
         <time unit="ms">1000</time>
         <memory unit="kb">32768</memory>
         <outsize unit="kb">1024</outsize>
@@ -565,7 +565,7 @@ int main()
     <solution>
         <rid>22</rid>
         <pid>1000</pid>
-        <desc>a + b</desc>
+        <desc>base function</desc>
         <time unit="ms">1000</time>
         <memory unit="kb">32768</memory>
         <outsize unit="kb">1024</outsize>
@@ -585,7 +585,7 @@ for i in range(1, 32768 * 1024):
     <solution>
         <rid>23</rid>
         <pid>1000</pid>
-        <desc>a + b</desc>
+        <desc>base function</desc>
         <time unit="ms">1000</time>
         <memory unit="kb">32768</memory>
         <outsize unit="kb">1024</outsize>
@@ -620,7 +620,7 @@ public class Main
     <solution>
         <rid>24</rid>
         <pid>1000</pid>
-        <desc>a + b</desc>
+        <desc>base function</desc>
         <time unit="ms">1000</time>
         <memory unit="kb">32768</memory>
         <outsize unit="kb">1024</outsize>
@@ -647,7 +647,7 @@ int main()
     <solution>
         <rid>25</rid>
         <pid>1000</pid>
-        <desc>a + b</desc>
+        <desc>base function</desc>
         <time unit="ms">1000</time>
         <memory unit="kb">32768</memory>
         <outsize unit="kb">1024</outsize>
@@ -675,7 +675,7 @@ int main()
     <solution>
         <rid>26</rid>
         <pid>1000</pid>
-        <desc>a + b</desc>
+        <desc>base function</desc>
         <time unit="ms">1000</time>
         <memory unit="kb">32768</memory>
         <outsize unit="kb">1024</outsize>
@@ -694,7 +694,7 @@ b = a / (a - a)
     <solution>
         <rid>27</rid>
         <pid>1000</pid>
-        <desc>a + b</desc>
+        <desc>base function</desc>
         <time unit="ms">1000</time>
         <memory unit="kb">32768</memory>
         <outsize unit="kb">1024</outsize>
@@ -726,7 +726,7 @@ public class Main
     <solution>
         <rid>28</rid>
         <pid>1000</pid>
-        <desc>a + b</desc>
+        <desc>base function</desc>
         <time unit="ms">1000</time>
         <memory unit="kb">32768</memory>
         <outsize unit="kb">1024</outsize>
@@ -754,7 +754,7 @@ int main()
     <solution>
         <rid>29</rid>
         <pid>1000</pid>
-        <desc>a + b</desc>
+        <desc>base function</desc>
         <time unit="ms">1000</time>
         <memory unit="kb">32768</memory>
         <outsize unit="kb">1024</outsize>
@@ -782,7 +782,7 @@ int main()
     <solution>
         <rid>30</rid>
         <pid>1000</pid>
-        <desc>a + b</desc>
+        <desc>base function</desc>
         <time unit="ms">1000</time>
         <memory unit="kb">32768</memory>
         <outsize unit="kb">1024</outsize>
@@ -802,7 +802,7 @@ os.fork()
     <solution>
         <rid>31</rid>
         <pid>1001</pid>
-        <desc>a + b loop</desc>
+        <desc>base function(a + b loop)</desc>
         <time unit="ms">1000</time>
         <memory unit="kb">32768</memory>
         <outsize unit="kb">1024</outsize>
@@ -828,7 +828,7 @@ int main()
     <solution>
         <rid>32</rid>
         <pid>1001</pid>
-        <desc>a + b loop</desc>
+        <desc>base function(a + b loop)</desc>
         <time unit="ms">1000</time>
         <memory unit="kb">32768</memory>
         <outsize unit="kb">1024</outsize>
@@ -854,7 +854,7 @@ int main()
     <solution>
         <rid>33</rid>
         <pid>1001</pid>
-        <desc>a + b loop</desc>
+        <desc>base function(a + b loop)</desc>
         <time unit="ms">1000</time>
         <memory unit="kb">32768</memory>
         <outsize unit="kb">1024</outsize>
@@ -875,7 +875,7 @@ while (1):
     <solution>
         <rid>34</rid>
         <pid>1001</pid>
-        <desc>a + b loop</desc>
+        <desc>base function(a + b loop)</desc>
         <time unit="ms">1000</time>
         <memory unit="kb">32768</memory>
         <outsize unit="kb">1024</outsize>
@@ -908,7 +908,7 @@ public class Main
     <solution>
         <rid>35</rid>
         <pid>1001</pid>
-        <desc>a + b loop</desc>
+        <desc>base function(a + b loop)</desc>
         <time unit="ms">1000</time>
         <memory unit="kb">32768</memory>
         <outsize unit="kb">1024</outsize>
@@ -934,7 +934,7 @@ int main()
     <solution>
         <rid>36</rid>
         <pid>1003</pid>
-        <desc>spj: ac less than 0</desc>
+        <desc>base function(spj: ac less than 0)</desc>
         <time unit="ms">1000</time>
         <memory unit="kb">32768</memory>
         <outsize unit="kb">1024</outsize>
@@ -950,7 +950,7 @@ print -1
     <solution>
         <rid>37</rid>
         <pid>1003</pid>
-        <desc>spj: ac less than 0</desc>
+        <desc>base function(spj: ac less than 0)</desc>
         <time unit="ms">1000</time>
         <memory unit="kb">32768</memory>
         <outsize unit="kb">1024</outsize>
@@ -966,7 +966,7 @@ print 1
     <solution>
         <rid>38</rid>
         <pid>1004</pid>
-        <desc>sort</desc>
+        <desc>other test(sort)</desc>
         <time unit="ms">1000</time>
         <memory unit="kb">32768</memory>
         <outsize unit="kb">1024</outsize>
@@ -1005,7 +1005,7 @@ int main()
     <solution>
         <rid>39</rid>
         <pid>1004</pid>
-        <desc>sort</desc>
+        <desc>other test(sort)</desc>
         <time unit="ms">1000</time>
         <memory unit="kb">32768</memory>
         <outsize unit="kb">1024</outsize>
@@ -1041,7 +1041,7 @@ int main()
     <solution>
         <rid>40</rid>
         <pid>1004</pid>
-        <desc>sort</desc>
+        <desc>other test(sort)</desc>
         <time unit="ms">1000</time>
         <memory unit="kb">32768</memory>
         <outsize unit="kb">1024</outsize>
@@ -1060,7 +1060,7 @@ for i in sorted(s):
     <solution>
         <rid>41</rid>
         <pid>1004</pid>
-        <desc>sort</desc>
+        <desc>other test(sort)</desc>
         <time unit="ms">1000</time>
         <memory unit="kb">32768</memory>
         <outsize unit="kb">1024</outsize>
@@ -1098,7 +1098,7 @@ public class Main
     <solution>
         <rid>42</rid>
         <pid>1000</pid>
-        <desc>write file</desc>
+        <desc>security(write file)</desc>
         <time unit="ms">1000</time>
         <memory unit="kb">32768</memory>
         <outsize unit="kb">1024</outsize>
@@ -1123,6 +1123,290 @@ public class Main
         }
     }
 }
+]]>
+        </code>
+    </solution>
+
+    <solution>
+        <rid>43</rid>
+        <pid>1000</pid>
+        <desc>security(add directory)</desc>
+        <time unit="ms">1000</time>
+        <memory unit="kb">32768</memory>
+        <outsize unit="kb">1024</outsize>
+        <lang>python</lang>
+        <expect>Runtime Error(invalid syscall 39)</expect>
+        <code>
+<![CDATA[
+import os
+
+a, b = map(int, raw_input().split())
+print a + b
+os.chdir('/etc/')
+os.mkdir('security_test_add_dir')
+]]>
+        </code>
+    </solution>
+
+    <solution>
+        <rid>44</rid>
+        <pid>1000</pid>
+        <desc>security(remove directory)</desc>
+        <time unit="ms">1000</time>
+        <memory unit="kb">32768</memory>
+        <outsize unit="kb">1024</outsize>
+        <lang>python</lang>
+        <expect>Runtime Error(invalid syscall 120)</expect>
+        <code>
+<![CDATA[
+import os
+
+a, b = map(int, raw_input().split())
+print a + b
+os.system('rm -rf /etc/wyuoj/')
+]]>
+        </code>
+    </solution>
+
+    <solution>
+        <rid>45</rid>
+        <pid>1000</pid>
+        <desc>security(remove directory)</desc>
+        <time unit="ms">1000</time>
+        <memory unit="kb">32768</memory>
+        <outsize unit="kb">1024</outsize>
+        <lang>python</lang>
+        <expect>Runtime Error(invalid syscall 10)</expect>
+        <code>
+<![CDATA[
+import os
+
+a, b = map(int, raw_input().split())
+print a + b
+os.unlink('/etc/wyuoj')
+]]>
+        </code>
+    </solution>
+
+    <solution>
+        <rid>46</rid>
+        <pid>1000</pid>
+        <desc>security(write file)</desc>
+        <time unit="ms">1000</time>
+        <memory unit="kb">32768</memory>
+        <outsize unit="kb">1024</outsize>
+        <lang>python</lang>
+        <expect>Runtime Error</expect>
+        <code>
+<![CDATA[
+a, b = map(int, raw_input().split())
+print a + b
+fd = open('/etc/wyuoj/test.txt', 'w')
+print >> fd, 'test'
+]]>
+        </code>
+    </solution>
+
+    <solution>
+        <rid>47</rid>
+        <pid>1000</pid>
+        <desc>security(write file to /tmp)</desc>
+        <time unit="ms">1000</time>
+        <memory unit="kb">32768</memory>
+        <outsize unit="kb">1024</outsize>
+        <lang>python</lang>
+        <expect>Accepted</expect>
+        <code>
+<![CDATA[
+a, b = map(int, raw_input().split())
+print a + b
+fd = open('/tmp/test.txt', 'w')
+print >> fd, 'test'
+]]>
+        </code>
+    </solution>
+
+    <solution>
+        <rid>48</rid>
+        <pid>1000</pid>
+        <desc>security(read answer data)</desc>
+        <time unit="ms">1000</time>
+        <memory unit="kb">32768</memory>
+        <outsize unit="kb">1024</outsize>
+        <lang>python</lang>
+        <expect>Runtime Error</expect>
+        <code>
+<![CDATA[
+fd = open('/home/wyuojer/data/1000/1000.ans', 'r')
+print fd.read()
+]]>
+        </code>
+    </solution>
+
+    <solution>
+        <rid>49</rid>
+        <pid>1000</pid>
+        <desc>security(read answer data)</desc>
+        <time unit="ms">1000</time>
+        <memory unit="kb">32768</memory>
+        <outsize unit="kb">1024</outsize>
+        <lang>python</lang>
+        <expect>Runtime Error(invalid syscall 37)</expect>
+        <code>
+<![CDATA[
+import os
+import signal
+
+for pid in range(1000, 9999):
+    os.kill(pid, signal.SIGKILL)
+]]>
+        </code>
+    </solution>
+
+    <solution>
+        <rid>50</rid>
+        <pid>1000</pid>
+        <desc>security(eject cdrom)</desc>
+        <time unit="ms">1000</time>
+        <memory unit="kb">32768</memory>
+        <outsize unit="kb">1024</outsize>
+        <lang>java</lang>
+        <expect>Runtime Error</expect>
+        <code>
+<![CDATA[
+import java.io.*;
+import java.util.*;
+
+public class Main
+{
+    public static void main(String[] args)
+    {
+        int a, b;
+        Scanner cin = new Scanner(System.in);
+        
+        a = cin.nextInt();
+        b = cin.nextInt();
+        System.out.println(a + b);
+
+        Process p = null;
+        try {
+            p = Runtime.getRuntime().exec("sh -c eject");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+]]>
+        </code>
+    </solution>
+
+    <solution>
+        <rid>51</rid>
+        <pid>1000</pid>
+        <desc>security(fork bomb)</desc>
+        <time unit="ms">1000</time>
+        <memory unit="kb">32768</memory>
+        <outsize unit="kb">1024</outsize>
+        <lang>python</lang>
+        <expect>Runtime Error(invalid syscall 120)</expect>
+        <code>
+<![CDATA[
+import os
+
+while 1:
+    os.fork()
+]]>
+        </code>
+    </solution>
+
+    <solution>
+        <rid>52</rid>
+        <pid>1000</pid>
+        <desc>security(fork bomb)</desc>
+        <time unit="ms">1000</time>
+        <memory unit="kb">32768</memory>
+        <outsize unit="kb">1024</outsize>
+        <lang>java</lang>
+        <expect>Runtime Error</expect>
+        <code>
+<![CDATA[
+import java.io.*;
+import java.util.*;
+
+public class Main
+{
+    public static void main(String[] args)
+    {
+        int a, b;
+        Scanner cin = new Scanner(System.in);
+        
+        a = cin.nextInt();
+        b = cin.nextInt();
+        System.out.println(a + b);
+
+        Process p = null;
+        try {
+            p = Runtime.getRuntime().exec("/bin/bash /tmp/fork.sh");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+]]>
+        </code>
+    </solution>
+
+    <solution>
+        <rid>53</rid>
+        <pid>1000</pid>
+        <desc>security(socket client)</desc>
+        <time unit="ms">1000</time>
+        <memory unit="kb">32768</memory>
+        <outsize unit="kb">1024</outsize>
+        <lang>java</lang>
+        <expect>Runtime Error</expect>
+        <code>
+<![CDATA[
+import java.io.*;
+import java.util.*;
+import java.net.*;
+
+public class Main
+{
+    public static void main(String[] args)
+    {
+        int a, b;
+        Scanner cin = new Scanner(System.in);
+        
+        a = cin.nextInt();
+        b = cin.nextInt();
+        System.out.println(a + b);
+
+        try {
+            Socket s2 = new Socket("localhost", 8888);
+            s2.close();
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+    }
+}
+]]>
+        </code>
+    </solution>
+
+    <solution>
+        <rid>53</rid>
+        <pid>1000</pid>
+        <desc>security(create socket)</desc>
+        <time unit="ms">1000</time>
+        <memory unit="kb">32768</memory>
+        <outsize unit="kb">1024</outsize>
+        <lang>python</lang>
+        <expect>Runtime Error(invalid syscall 102</expect>
+        <code>
+<![CDATA[
+import socket
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
 ]]>
         </code>
     </solution>

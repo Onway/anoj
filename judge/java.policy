@@ -1,4 +1,4 @@
 grant {
     permission java.io.FilePermission "-", "read";
-    permission java.net.SocketPermission "-", "read";
+    permission java.net.SocketPermission "localhost:1024-", "listen";
 };

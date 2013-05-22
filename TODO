@@ -9,3 +9,6 @@ judger:
 19，output limit for java takes no effect.
 20，SIGXCPU terminate process, but not stop by ptrace for java.
 21，timeout has a few deviation.
+22，what if program use raise(SIGTRAP)?
+23，cgi子进程未释放网络连接。
+24，java的fork炸弹没效果？不应该啊！
