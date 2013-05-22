@@ -13,12 +13,13 @@ make install
 cd ..
 cp -f wyuoj.ini /etc/wyuoj
 cp -f mini-httpd.conf /etc/
+cp -f mini-httpd /etc/default/
 cp -rf web /home/wyuojer
 chown -R wyuojer:wyuojer /home/wyuojer/web
 
 if [ ! -d /home/wyuojer/devtools ] ; then
     cp -rf devtools /home/wyuojer/
-    chmod -R wyuojer:wyuojer /home/wyuojer/devtools
+    chown -R wyuojer:wyuojer /home/wyuojer/devtools
 fi
 
 if [ ! -d /home/wyuojer/data ] ; then
