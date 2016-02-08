@@ -698,6 +698,9 @@ init_syscall_rule()
 #ifdef SYS_prctl
     syscall_rule[SYS_prctl] = FALSE;
 #endif
+#ifdef SYS_arch_prctl
+    syscall_rule[SYS_arch_prctl] = TRUE;
+#endif
 #ifdef SYS_pread64
     syscall_rule[SYS_pread64] = TRUE;
 #endif

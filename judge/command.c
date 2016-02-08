@@ -91,7 +91,7 @@ execute_command()
     /* 子进程停止原因，期待是SYS_execve和SIGTRAP停止 */
     signo = WSTOPSIG(status);
     ptrace(PTRACE_GETREGS, child, NULL, &regs);
-    if (signo != SIGTRAP || regs.orig_eax != SYS_execve) {
+    if (signo != SIGTRAP || regs.orig_rax != SYS_execve) {
         kill(child, SIGKILL);
         result->code = EXIT_IE;
         g_string_assign(result->err,
@@ -218,13 +218,13 @@ trace_child(pid_t child)
         ptrace(PTRACE_GETREGS, child, NULL, &regs);
         endflag ^= 1;
         /* endflag == 0 进入系统调用前，判断是否允许该调用 */
-        if (endflag == 0 && syscall_rule[regs.orig_eax]) {
+        if (endflag == 0 && syscall_rule[regs.orig_rax]) {
             ptrace(PTRACE_SYSCALL, child, NULL, NULL);
             continue;
         } else if (endflag == 0) {
             kill(child, SIGKILL);
             result->code = EXIT_RE;
-            g_string_printf(result->err, "invalid syscall %ld", regs.orig_eax);
+            g_string_printf(result->err, "invalid syscall %lld", regs.orig_rax);
             return;
         }
 

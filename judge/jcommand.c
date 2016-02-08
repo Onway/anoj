@@ -80,7 +80,7 @@ execute_jcommand()
     /* 子进程停止原因，期待是SYS_execve和SIGTRAP停止 */
     signo = WSTOPSIG(status);
     ptrace(PTRACE_GETREGS, child, NULL, &regs);
-    if (signo != SIGTRAP || regs.orig_eax != SYS_execve) {
+    if (signo != SIGTRAP || regs.orig_rax != SYS_execve) {
         kill(child, SIGKILL);
         result->code = EXIT_IE;
         g_string_assign(result->err,
