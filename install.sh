@@ -20,9 +20,9 @@ cp -rf web /home/wyuojer
 chown -R wyuojer:wyuojer /home/wyuojer/web
 
 
-if [ ! -d /home/wyuojer/devtools ] ; then
-    cp -rf devtools /home/wyuojer/
-    chown -R wyuojer:wyuojer /home/wyuojer/devtools
+if [ ! -d /home/wyuojer/test ] ; then
+    cp -rf test /home/wyuojer/
+    chown -R wyuojer:wyuojer /home/wyuojer/test
 fi
 
 
