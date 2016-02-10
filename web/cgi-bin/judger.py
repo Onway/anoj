@@ -19,7 +19,6 @@ import urllib2
 import random
 import signal
 import commands
-import ConfigParser
 import traceback
 import subprocess
 
@@ -32,14 +31,15 @@ LANG = None
 CODE = None
 REMOTE = ""
 
-FROM = None
-TO = None
-WORKDIR = None
-DATADIR = None
-INIFILE = ["/home/wyuojer/wyuoj.ini", "/etc/wyuoj/wyuoj.ini"]
+FROM = ["127.0.0.1", "192.168.1.106"]
+TO = "http://127.0.0.1:8888/cgi-bin/result.py"
+WORKDIR = "/tmp"
+DATADIR = "/home/wyuojer/data"
+
 
 class CompileTimeout(Exception):
     pass
+
 
 def randstr(n = 16):
     st = ""
@@ -47,13 +47,16 @@ def randstr(n = 16):
         st = st + chr(97 + random.randint(0, 25))
     return st
 
+
 def sighandler(signo, frame):
     raise CompileTimeout
+
 
 def clean_exit(tmpstr):
     os.chdir(WORKDIR)
     os.system("rm -rf %s*" % tmpstr)
     exit(0)
+
 
 def send_result(**kdict):
     kdict["rid"] = RID
@@ -72,6 +75,7 @@ def send_result(**kdict):
     if not kdict.has_key("debug"):
         kdict["debug"] = ""
     urllib2.urlopen(urllib2.Request(TO, urllib.urlencode(kdict)))
+
 
 def do_compile():
     cmd = ""
@@ -129,6 +133,7 @@ def do_compile():
         clean_exit(tmpstr)
     return tmpstr
 
+
 def do_judge(tmpstr):
     cmd = "judger -t %s -f %s -l %s -d %s -m %s " % (TIME, OUTSIZE, LANG,
             os.path.join(DATADIR, PID), MEMORY)
@@ -160,8 +165,8 @@ def do_judge(tmpstr):
     else:
         send_result(**{"result": "Internal Error", "debug": "%s error" % cmd})
 
-    os.chdir(WORKDIR)
-    os.system("rm -rf %s*" % tmpstr)
+    clean_exit(tmpstr)
+
 
 def save_history():
     submit = os.path.join("/home/wyuojer/history/submit")
@@ -182,6 +187,7 @@ def save_history():
     f.write(json.dumps(kdict))
     f.close()
 
+
 if __name__ == "__main__":
     print "Content-Type: text/html"
     print ""
@@ -194,13 +200,6 @@ if __name__ == "__main__":
     OUTSIZE = form.getvalue("outsize", "1024")
     LANG = form.getvalue("lang", "c")
     CODE = form.getvalue("code", "")
-
-    cf = ConfigParser.ConfigParser();
-    cf.read(INIFILE)
-    FROM = cf.get("DEFAULT", "FROM").split(",")
-    TO = cf.get("DEFAULT", "TO")
-    WORKDIR = cf.get("DEFAULT", "WORKDIR")
-    DATADIR = cf.get("DEFAULT", "DATADIR")
 
     if "REMOTE_ADDR" in os.environ:
         REMOTE = os.environ["REMOTE_ADDR"]

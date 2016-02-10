@@ -2,4 +2,4 @@
 
 rm -f /usr/bin/judger
 rm -rf /etc/wyuoj
-userdel wyuojer
+userdel -r wyuojer
