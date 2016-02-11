@@ -198,7 +198,7 @@ print a + b
         <memory unit="kb">32768</memory>
         <outsize unit="kb">1024</outsize>
         <lang>c</lang>
-        <expect>Compile Error(compile timeout)</expect>
+        <expect>Accepted</expect>
         <code>
 <![CDATA[
 #include <stdio.h>
@@ -536,7 +536,7 @@ int main()
         <pid>1000</pid>
         <desc>base function</desc>
         <time unit="ms">1000</time>
-        <memory unit="kb">32768</memory>
+        <memory unit="kb">10240</memory>
         <outsize unit="kb">1024</outsize>
         <lang>c++</lang>
         <expect>Memory Limit Exceeded</expect>
@@ -567,7 +567,7 @@ int main()
         <pid>1000</pid>
         <desc>base function</desc>
         <time unit="ms">1000</time>
-        <memory unit="kb">32768</memory>
+        <memory unit="kb">10240</memory>
         <outsize unit="kb">1024</outsize>
         <lang>python</lang>
         <expect>Memory Limit Exceeded</expect>
