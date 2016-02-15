@@ -34,7 +34,7 @@ REMOTE = ""
 FROM = ["127.0.0.1", "192.168.1.106"]
 TO = "http://127.0.0.1:8888/cgi-bin/result.py"
 WORKDIR = "/tmp"
-DATADIR = "/home/wyuojer/data"
+DATADIR = "/home/anojer/data"
 
 
 class CompileTimeout(Exception):
@@ -152,7 +152,7 @@ def do_judge(tmpstr):
         cmd += "python -S %s.py" % tmpstr
     elif LANG == "java":
         cmd += "java -Djava.security.manager -Djava.security.policy=%s Main" % (
-                "/etc/wyuoj/java.policy", )
+                "/etc/anoj/java.policy", )
     
     status, output = commands.getstatusoutput(cmd)
     if status == 0:
@@ -169,7 +169,7 @@ def do_judge(tmpstr):
 
 
 def save_history():
-    submit = os.path.join("/home/wyuojer/history/submit")
+    submit = os.path.join("/home/anojer/history/submit")
     if not os.path.exists(submit):
         os.system("mkdir -p %s" % submit)
 

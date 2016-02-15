@@ -1163,7 +1163,7 @@ import os
 
 a, b = map(int, raw_input().split())
 print a + b
-os.system('rm -rf /etc/wyuoj/')
+os.system('rm -rf /etc/anoj/')
 ]]>
         </code>
     </solution>
@@ -1183,7 +1183,7 @@ import os
 
 a, b = map(int, raw_input().split())
 print a + b
-os.unlink('/etc/wyuoj')
+os.unlink('/etc/anoj')
 ]]>
         </code>
     </solution>
@@ -1201,7 +1201,7 @@ os.unlink('/etc/wyuoj')
 <![CDATA[
 a, b = map(int, raw_input().split())
 print a + b
-fd = open('/etc/wyuoj/test.txt', 'w')
+fd = open('/etc/anoj/test.txt', 'w')
 print >> fd, 'test'
 ]]>
         </code>
@@ -1237,7 +1237,7 @@ print >> fd, 'test'
         <expect>Runtime Error</expect>
         <code>
 <![CDATA[
-fd = open('/home/wyuojer/data/1000/1000.ans', 'r')
+fd = open('/home/anojer/data/1000/1000.ans', 'r')
 print fd.read()
 ]]>
         </code>

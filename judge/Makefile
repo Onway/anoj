@@ -29,11 +29,11 @@ install:
 	cp -f judger /usr/bin/
 	chown root:root /usr/bin/judger
 	chmod 4755 /usr/bin/judger
-	mkdir -p /etc/wyuoj
-	cp -f java.policy /etc/wyuoj
+	mkdir -p /etc/anoj
+	cp -f java.policy /etc/anoj
 
 uninstall:
 	rm -f /usr/bin/judger
-	rm /etc/wyuoj/java.policy
-	rmdir --ignore-fail-on-non-empty /etc/wyuoj
+	rm /etc/anoj/java.policy
+	rmdir --ignore-fail-on-non-empty /etc/anoj
 

@@ -1,4 +1,4 @@
-# wyuoj
+# anoj
 Online Judge的评测程序
 
 ## 基本功能
@@ -23,8 +23,8 @@ Online Judge的评测程序
     sudo apt-get install mini-httpd
 
 ## 单独运行judger程序
-    git clone https://github.com/Onway/wyuoj.git
-    cd wyuoj/judge
+    git clone https://github.com/Onway/anoj.git
+    cd anoj/judge
     make
     sudo make install
     
@@ -41,15 +41,15 @@ Online Judge的评测程序
     rm -rf /tmp/test
 
 ## 安装测试
-    git clone https://github.com/Onway/wyuoj.git
-    cd wyuoj
+    git clone https://github.com/Onway/anoj.git
+    cd anoj
     sudo ./install.sh
 
     # 运行http服务器，可查看demo测试页面：http://127.0.0.1:8888/
     sudo mini_httpd -C /etc/mini-httpd.conf
 
-    # 以wyuojer用户运行测试
-    sudo su wyuojer
+    # 以anojer用户运行测试
+    sudo su anojer
     
     # 在~/data目录生成输入和答案文件
     cd ~/test
@@ -64,12 +64,12 @@ Online Judge的评测程序
     # 先停止http服务器
     sudo kill `cat /var/run/mini-httpd.pid`
 
-    cd wyuoj
+    cd anoj
     sudo ./uninstall.sh
     # 或者直接删掉
     rm -f /usr/bin/judger
-    rm -rf /etc/wyuoj
-    userdel -r wyuojer
+    rm -rf /etc/anoj
+    userdel -r anojer
 
 ## 注意
 * judger程序的沙箱功能主要是通过降权、设置资源限制和拦截系统调用

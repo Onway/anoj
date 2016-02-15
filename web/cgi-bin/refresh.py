@@ -8,7 +8,7 @@ import os
 import cgi
 import commands
 
-HISTORY = "/home/wyuojer/history"
+HISTORY = "/home/anojer/history"
 
 if __name__ == "__main__":
     print "Content-Type: application/json"

@@ -11,7 +11,7 @@ import cgitb
 cgitb.enable()
 
 
-HISTORY = "/home/wyuojer/history"
+HISTORY = "/home/anojer/history"
 
 if __name__ == "__main__":
     form = cgi.FieldStorage()
